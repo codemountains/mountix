@@ -1,0 +1,10 @@
+[package]
+name = "mountix-kernel"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+anyhow = "1.0.58"
+async-trait = "0.1.56"
+#derive-new = "0.5.9"
+serde = { version = "1.0", features = ["derive"] }

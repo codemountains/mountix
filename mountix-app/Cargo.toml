@@ -1,0 +1,11 @@
+[package]
+name = "mountix-app"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+mountix-kernel = { path = "../mountix-kernel" }
+mountix-adapter = { path = "../mountix-adapter" }
+anyhow = "1.0.58"
+tokio = { version = "1.20.0", features = ["full"] }
+num = "0.4.0"

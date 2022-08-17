@@ -1,0 +1,7 @@
+[workspace]
+members = [
+    "mountix-adapter",
+    "mountix-app",
+    "mountix-driver",
+    "mountix-kernel"
+]

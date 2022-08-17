@@ -1,0 +1,18 @@
+[package]
+name = "mountix-driver"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+mountix-kernel = { path = "../mountix-kernel" }
+mountix-app = { path = "../mountix-app" }
+mountix-adapter = { path = "../mountix-adapter" }
+axum = "0.5.13"
+anyhow = "1.0.58"
+tokio = { version = "1.20.0", features = ["full"] }
+serde = { version = "1.0", features = ["derive"] }
+tracing = "0.1.35"
+tracing-subscriber = { version = "0.3.15", features = ["env-filter"] }
+dotenv = "0.15.0"
+tower = "0.4.13"
+tower-http = { version = "0.3.4", features = ["cors"] }
