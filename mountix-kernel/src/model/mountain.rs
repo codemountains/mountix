@@ -1,6 +1,3 @@
-use std::fmt;
-use std::fmt::Formatter;
-
 #[derive(Debug)]
 pub struct Mountain {
     pub id: i32,
