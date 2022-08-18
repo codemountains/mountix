@@ -45,12 +45,6 @@ impl TryFrom<MountainDocument> for Mountain {
     }
 }
 
-// pub struct MountainFilter {
-//     pub name: Option<String>,
-//     pub prefecture: Option<String>,
-//     pub tag: Option<String>,
-// }
-
 pub struct MountainFindCommand {
     pub(crate) filter: Document,
     pub(crate) options: FindOptions,
@@ -82,7 +76,7 @@ impl TryFrom<MountainSearchCondition> for MountainFindCommand {
         }
 
         let key = sc.sort.key.to_key();
-        let value = sc.sort.order.to_type();
+        let value = sc.sort.order.to_value();
         let sort_doc = doc! {key: value};
 
         let options = FindOptions::builder()
