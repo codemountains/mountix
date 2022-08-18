@@ -45,12 +45,6 @@ impl TryFrom<MountainDocument> for Mountain {
     }
 }
 
-// pub struct MountainFilter {
-//     pub name: Option<String>,
-//     pub prefecture: Option<String>,
-//     pub tag: Option<String>,
-// }
-
 pub struct MountainFindCommand {
     pub(crate) filter: Document,
     pub(crate) options: FindOptions,
