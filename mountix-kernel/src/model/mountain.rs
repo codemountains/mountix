@@ -1,3 +1,6 @@
+use std::fmt;
+use std::fmt::Formatter;
+
 #[derive(Debug)]
 pub struct Mountain {
     pub id: i32,
@@ -197,7 +200,7 @@ pub enum MountainOrderType {
 }
 
 impl MountainOrderType {
-    pub fn to_type(&self) -> i64 {
+    pub fn to_value(&self) -> i64 {
         match self {
             MountainOrderType::Asc => 1,
             MountainOrderType::Desc => -1,

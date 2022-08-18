@@ -76,7 +76,7 @@ impl TryFrom<MountainSearchCondition> for MountainFindCommand {
         }
 
         let key = sc.sort.key.to_key();
-        let value = sc.sort.order.to_type();
+        let value = sc.sort.order.to_value();
         let sort_doc = doc! {key: value};
 
         let options = FindOptions::builder()
