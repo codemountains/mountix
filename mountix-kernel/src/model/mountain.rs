@@ -175,32 +175,32 @@ impl TryFrom<String> for MountainsTag {
 
 #[derive(Debug, Copy, Clone)]
 pub enum MountainSortKey {
-    ID,
-    ELEVATION,
-    NAME,
+    Id,
+    Elevation,
+    Name,
 }
 
 impl MountainSortKey {
     pub fn to_key(&self) -> String {
         match self {
-            MountainSortKey::ID => "_id".to_string(),
-            MountainSortKey::ELEVATION => "elevation".to_string(),
-            MountainSortKey::NAME => "name_kana".to_string(),
+            MountainSortKey::Id => "_id".to_string(),
+            MountainSortKey::Elevation => "elevation".to_string(),
+            MountainSortKey::Name => "name_kana".to_string(),
         }
     }
 }
 
 #[derive(Debug, Copy, Clone)]
 pub enum MountainOrderType {
-    ASC,
-    DESC,
+    Asc,
+    Desc,
 }
 
 impl MountainOrderType {
     pub fn to_type(&self) -> i64 {
         match self {
-            MountainOrderType::ASC => 1,
-            MountainOrderType::DESC => -1,
+            MountainOrderType::Asc => 1,
+            MountainOrderType::Desc => -1,
         }
     }
 }
@@ -214,8 +214,8 @@ pub struct MountainSortCondition {
 impl Default for MountainSortCondition {
     fn default() -> Self {
         Self {
-            key: MountainSortKey::ID,
-            order: MountainOrderType::ASC,
+            key: MountainSortKey::Id,
+            order: MountainOrderType::Asc,
         }
     }
 }
@@ -226,28 +226,28 @@ impl TryFrom<String> for MountainSortCondition {
     fn try_from(sort_param: String) -> Result<Self, Self::Error> {
         match sort_param.as_str() {
             "id.asc" => Ok(MountainSortCondition {
-                key: MountainSortKey::ID,
-                order: MountainOrderType::ASC,
+                key: MountainSortKey::Id,
+                order: MountainOrderType::Asc,
             }),
             "id.desc" => Ok(MountainSortCondition {
-                key: MountainSortKey::ID,
-                order: MountainOrderType::DESC,
+                key: MountainSortKey::Id,
+                order: MountainOrderType::Desc,
             }),
             "elevation.asc" => Ok(MountainSortCondition {
-                key: MountainSortKey::ELEVATION,
-                order: MountainOrderType::ASC,
+                key: MountainSortKey::Elevation,
+                order: MountainOrderType::Asc,
             }),
             "elevation.desc" => Ok(MountainSortCondition {
-                key: MountainSortKey::ELEVATION,
-                order: MountainOrderType::DESC,
+                key: MountainSortKey::Elevation,
+                order: MountainOrderType::Desc,
             }),
             "name.asc" => Ok(MountainSortCondition {
-                key: MountainSortKey::NAME,
-                order: MountainOrderType::ASC,
+                key: MountainSortKey::Name,
+                order: MountainOrderType::Asc,
             }),
             "name.desc" => Ok(MountainSortCondition {
-                key: MountainSortKey::NAME,
-                order: MountainOrderType::DESC,
+                key: MountainSortKey::Name,
+                order: MountainOrderType::Desc,
             }),
             _ => Err(Self::Error::msg("Invalid sort value.")),
         }
