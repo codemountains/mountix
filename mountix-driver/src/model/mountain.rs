@@ -114,7 +114,6 @@ impl JsonMountainsErrorResponse {
 
 pub enum MountainError {
     NotFound,
-    InvalidId,
     ServerError,
 }
 
@@ -126,10 +125,6 @@ impl IntoResponse for MountainError {
                     "山岳情報が見つかりませんでした。".to_string(),
                 ]);
                 (StatusCode::NOT_FOUND, Json(json)).into_response()
-            }
-            MountainError::InvalidId => {
-                let json = JsonMountainsErrorResponse::new(vec!["山岳IDが不正です。".to_string()]);
-                (StatusCode::BAD_REQUEST, Json(json)).into_response()
             }
             MountainError::ServerError => {
                 let json = JsonMountainsErrorResponse::new(vec![

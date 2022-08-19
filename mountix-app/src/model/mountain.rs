@@ -17,7 +17,7 @@ pub struct SearchedMountain {
 impl From<Mountain> for SearchedMountain {
     fn from(mountain: Mountain) -> Self {
         Self {
-            id: mountain.id,
+            id: mountain.id.value,
             name: mountain.name,
             name_kana: mountain.name_kana,
             area: mountain.area,

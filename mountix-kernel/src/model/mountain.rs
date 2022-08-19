@@ -1,6 +1,8 @@
+use crate::model::Id;
+
 #[derive(Debug)]
 pub struct Mountain {
-    pub id: i32,
+    pub id: Id<Mountain>,
     pub name: String,
     pub name_kana: String,
     pub area: String,
@@ -19,7 +21,7 @@ pub struct Location {
 
 impl Mountain {
     pub fn new(
-        id: i32,
+        id: Id<Mountain>,
         name: String,
         name_kana: String,
         area: String,

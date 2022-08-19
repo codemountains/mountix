@@ -1,6 +1,7 @@
 use mongodb::bson::{doc, Document};
 use mongodb::options::FindOptions;
 use mountix_kernel::model::mountain::{Location, Mountain, MountainSearchCondition};
+use mountix_kernel::model::Id;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -26,6 +27,8 @@ pub struct LocationDocument {
 impl TryFrom<MountainDocument> for Mountain {
     type Error = anyhow::Error;
     fn try_from(mountain_doc: MountainDocument) -> Result<Self, Self::Error> {
+        let mountain_id: Id<Mountain> = mountain_doc.id.into();
+
         let mountain_location = Location::new(
             mountain_doc.location.coordinates[1],
             mountain_doc.location.coordinates[0],
@@ -33,7 +36,7 @@ impl TryFrom<MountainDocument> for Mountain {
         );
 
         Ok(Mountain::new(
-            mountain_doc.id,
+            mountain_id,
             mountain_doc.name,
             mountain_doc.name_kana,
             mountain_doc.area,

@@ -14,28 +14,24 @@ pub async fn get_mountain(
     Path(mountain_id): Path<String>,
     Extension(modules): Extension<Arc<Modules>>,
 ) -> Result<impl IntoResponse, MountainError> {
-    match mountain_id.parse::<i32>() {
-        Ok(id) => {
-            let res = modules.mountain_use_case().get(id).await;
-            match res {
-                Ok(sm) => {
-                    return match sm {
-                        Some(sm) => {
-                            let json: JsonMountain = sm.into();
-                            Ok((StatusCode::OK, Json(json)))
-                        }
-                        None => Err(MountainError::NotFound),
-                    }
+    let res = modules.mountain_use_case().get(mountain_id).await;
+    match res {
+        Ok(sm) => {
+            return match sm {
+                Some(sm) => {
+                    let json: JsonMountain = sm.into();
+                    Ok((StatusCode::OK, Json(json)))
                 }
-                Err(err) => {
-                    error!("{:?}", err);
-                    Err(MountainError::ServerError)
-                }
+                None => Err(MountainError::NotFound),
             }
         }
         Err(err) => {
             error!("{:?}", err);
-            Err(MountainError::InvalidId)
+            if err.to_string() == "Invalid mountain id.".to_string() {
+                Err(MountainError::NotFound)
+            } else {
+                Err(MountainError::ServerError)
+            }
         }
     }
 }
