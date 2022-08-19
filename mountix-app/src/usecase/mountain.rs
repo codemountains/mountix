@@ -14,8 +14,12 @@ impl<R: RepositoriesModuleExt> MountainUseCase<R> {
         Self { repositories }
     }
 
-    pub async fn get(&self, id: i32) -> anyhow::Result<Option<SearchedMountain>> {
-        let mountain = self.repositories.mountain_repository().get(id).await?;
+    pub async fn get(&self, id: String) -> anyhow::Result<Option<SearchedMountain>> {
+        let mountain = self
+            .repositories
+            .mountain_repository()
+            .get(id.try_into()?)
+            .await?;
         match mountain {
             Some(mountain) => Ok(Some(mountain.into())),
             None => Ok(None),

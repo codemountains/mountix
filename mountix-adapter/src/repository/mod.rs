@@ -13,7 +13,7 @@ impl<T> MongoDBRepositoryImpl<T> {
     pub fn new(db: Db) -> Self {
         Self {
             db,
-            _marker: Default::default(),
+            _marker: PhantomData,
         }
     }
 }

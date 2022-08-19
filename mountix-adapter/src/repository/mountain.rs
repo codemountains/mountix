@@ -4,14 +4,15 @@ use async_trait::async_trait;
 use futures::stream::TryStreamExt;
 use mongodb::bson::doc;
 use mountix_kernel::model::mountain::{Mountain, MountainSearchCondition};
+use mountix_kernel::model::Id;
 use mountix_kernel::repository::mountain::MountainRepository;
 
 #[async_trait]
 impl MountainRepository for MongoDBRepositoryImpl<Mountain> {
-    async fn get(&self, id: i32) -> anyhow::Result<Option<Mountain>> {
+    async fn get(&self, id: Id<Mountain>) -> anyhow::Result<Option<Mountain>> {
         let collection = self.db.0.collection::<MountainDocument>("mountains");
 
-        let filter = doc! {"_id": id};
+        let filter = doc! {"_id": id.value};
         let mountain_doc = collection.find_one(filter, None).await?;
         match mountain_doc {
             Some(md) => Ok(Some(md.try_into()?)),
