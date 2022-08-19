@@ -6,7 +6,7 @@ use axum::http::Method;
 use axum::{routing::get, Extension, Router};
 use dotenv::dotenv;
 use std::env;
-use std::net::SocketAddr;
+use std::net::{IpAddr, SocketAddr};
 use std::sync::Arc;
 use tower_http::cors::{Any, CorsLayer};
 
@@ -32,7 +32,7 @@ pub async fn startup(modules: Arc<Modules>) {
         .layer(cors)
         .layer(Extension(modules));
 
-    let addr = SocketAddr::from(([127, 0, 0, 1], 8080));
+    let addr = SocketAddr::from(init_addr());
     tracing::info!("Server listening on {}", addr);
 
     axum::Server::bind(&addr)
@@ -43,8 +43,23 @@ pub async fn startup(modules: Arc<Modules>) {
 
 pub fn init_app() {
     dotenv().ok();
-    if env::var_os("RUST_LOG").is_none() {
-        env::set_var("RUST_LOG", "info");
-    }
     tracing_subscriber::fmt::init();
+}
+
+fn init_addr() -> (IpAddr, u16) {
+    let env_host = env::var_os("HOST").expect("HOST is undefined.");
+    let ip_addr = env_host
+        .into_string()
+        .expect("HOST is invalid.")
+        .parse::<IpAddr>()
+        .expect("HOST is invalid.");
+
+    let env_port = env::var_os("PORT").expect("PORT is undefined.");
+    let port = env_port
+        .into_string()
+        .expect("PORT is invalid.")
+        .parse::<u16>()
+        .expect("PORT is invalid.");
+
+    (ip_addr, port)
 }
