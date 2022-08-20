@@ -18,7 +18,7 @@ cd ./migrations/ && ./migrate.sh && cd ../
 > note
 > macOS Monterey version 12.5 でのみ動作確認済みです。 
 > 
-> `mongoimport`については[MongoDB Database Tools 公式ドキュメント](https://www.mongodb.com/docs/database-tools/)を確認してください。
+> `mongoimport`については [MongoDB Database Tools 公式ドキュメント](https://www.mongodb.com/docs/database-tools/)を確認してください。
 > 
 
 ### Run the web application
