@@ -12,7 +12,9 @@
 - Cluster Name: `Mountix-Cluster0`
 
 ```shell
-cd ./migrations/ && ./migrate.sh && cd ../
+cd ./migrations/
+./migrate.sh
+cd ../
 ```
 
 > note
