@@ -17,7 +17,10 @@ pub async fn hc_mongodb(
         .health_check_use_case()
         .diagnose_mongo_db_conn()
         .await
-        .map(|_| StatusCode::NO_CONTENT)
+        .map(|_| {
+            tracing::debug!("Access mongodb health check endpoint.");
+            StatusCode::NO_CONTENT
+        })
         .map_err(|err| {
             error!("{:?}", err);
             StatusCode::SERVICE_UNAVAILABLE
