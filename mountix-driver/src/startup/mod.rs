@@ -61,5 +61,6 @@ fn init_addr() -> (IpAddr, u16) {
         .parse::<u16>()
         .expect("PORT is invalid.");
 
+    tracing::debug!("Init ip address.");
     (ip_addr, port)
 }
