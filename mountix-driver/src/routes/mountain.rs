@@ -19,7 +19,7 @@ pub async fn get_mountain(
         Ok(sm) => {
             return match sm {
                 Some(sm) => {
-                    tracing::info!("Success get mountain by id.");
+                    tracing::info!("Succeeded to get mountain by id ({}).", &sm.id);
 
                     let json: JsonMountain = sm.into();
                     Ok((StatusCode::OK, Json(json)))
@@ -47,7 +47,7 @@ pub async fn find_mountains(
     let res = modules.mountain_use_case().find(search_query).await;
     match res {
         Ok(fm) => {
-            tracing::info!("Success find mountains.");
+            tracing::info!("Succeeded to find {} mountains.", &fm.mountains.len());
 
             let json: JsonMountainsResponse = fm.into();
             Ok((StatusCode::OK, Json(json)))
