@@ -1,6 +1,9 @@
 use crate::model::mountain::{FoundMountains, MountainSearchQuery, SearchedMountain};
 use mountix_adapter::modules::RepositoriesModuleExt;
-use mountix_kernel::model::mountain::MountainSearchCondition;
+use mountix_kernel::model::mountain::{
+    MountainFindException, MountainGetException, MountainSearchCondition,
+};
+use mountix_kernel::model::ErrorCode;
 use mountix_kernel::repository::mountain::MountainRepository;
 use num::FromPrimitive;
 use std::sync::Arc;
@@ -14,22 +17,23 @@ impl<R: RepositoriesModuleExt> MountainUseCase<R> {
         Self { repositories }
     }
 
-    pub async fn get(&self, id: String) -> anyhow::Result<Option<SearchedMountain>> {
-        let mountain = self
-            .repositories
-            .mountain_repository()
-            .get(id.try_into()?)
-            .await?;
-        match mountain {
-            Some(mountain) => Ok(Some(mountain.into())),
-            None => Ok(None),
+    pub async fn get(&self, id: String) -> Result<Option<SearchedMountain>, MountainGetException> {
+        match id.try_into() {
+            Ok(id) => match self.repositories.mountain_repository().get(id).await {
+                Ok(mountain) => match mountain {
+                    Some(mountain) => Ok(Some(mountain.into())),
+                    None => Ok(None),
+                },
+                Err(_) => Err(MountainGetException::new(ErrorCode::ServerError)),
+            },
+            Err(error_code) => Err(MountainGetException::new(error_code)),
         }
     }
 
     pub async fn find(
         &self,
         search_query: MountainSearchQuery,
-    ) -> Result<FoundMountains, (u64, Vec<String>)> {
+    ) -> Result<FoundMountains, MountainFindException> {
         match MountainSearchCondition::try_from(search_query) {
             Ok(condition) => {
                 let offset = condition.skip.clone();
@@ -71,13 +75,16 @@ impl<R: RepositoriesModuleExt> MountainUseCase<R> {
                             limit,
                         })
                     }
-                    Err(_) => Err((
-                        500,
+                    Err(_) => Err(MountainFindException::new(
+                        ErrorCode::ServerError,
                         vec!["山岳情報を検索中にエラーが発生しました。".to_string()],
                     )),
                 }
             }
-            Err(err) => Err((400, err)),
+            Err(error_messages) => Err(MountainFindException::new(
+                ErrorCode::InvalidQueryParam,
+                error_messages,
+            )),
         }
     }
 }

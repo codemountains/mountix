@@ -7,6 +7,7 @@ use axum::http::StatusCode;
 use axum::response::IntoResponse;
 use axum::{Extension, Json};
 use mountix_app::model::mountain::MountainSearchQuery;
+use mountix_kernel::model::ErrorCode;
 use std::sync::Arc;
 use tracing::log::error;
 
@@ -24,12 +25,15 @@ pub async fn get_mountain(
                     let json: JsonMountain = sm.into();
                     Ok((StatusCode::OK, Json(json)))
                 }
-                None => Err(MountainError::NotFound),
+                None => {
+                    tracing::info!("Succeeded to get mountain by id (None).");
+                    Err(MountainError::NotFound)
+                },
             }
         }
-        Err(err) => {
-            error!("{:?}", err);
-            if err.to_string() == "Invalid mountain id.".to_string() {
+        Err(get_ex) => {
+            error!("{:?}", get_ex);
+            if get_ex.error_code == ErrorCode::InvalidId {
                 Err(MountainError::NotFound)
             } else {
                 Err(MountainError::ServerError)
@@ -52,11 +56,11 @@ pub async fn find_mountains(
             let json: JsonMountainsResponse = fm.into();
             Ok((StatusCode::OK, Json(json)))
         }
-        Err(err) => {
-            error!("{:?}", err);
+        Err(find_ex) => {
+            error!("{:?}", find_ex);
 
-            let json = JsonMountainsErrorResponse::new(err.1);
-            if err.0 == 500u64 {
+            let json = JsonMountainsErrorResponse::new(find_ex.messages);
+            if find_ex.error_code == ErrorCode::ServerError {
                 Err((StatusCode::INTERNAL_SERVER_ERROR, Json(json)))
             } else {
                 Err((StatusCode::BAD_REQUEST, Json(json)))
