@@ -73,7 +73,7 @@ impl TryFrom<MountainSearchQuery> for MountainSearchCondition {
         if let Some(prefecture_param) = ms.prefecture {
             match MountainPrefecture::try_from(prefecture_param) {
                 Ok(p) => prefecture = Some(p),
-                Err(_) => errors.push("都道府県IDが不正です。".to_string()),
+                Err(_) => errors.push(error_msg("prefecture (都道府県ID)")),
             }
         };
 
@@ -81,7 +81,7 @@ impl TryFrom<MountainSearchQuery> for MountainSearchCondition {
         if let Some(tag_param) = ms.tag {
             match MountainsTag::try_from(tag_param) {
                 Ok(t) => tag = Some(t),
-                Err(_) => errors.push("タグIDが不正です。".to_string()),
+                Err(_) => errors.push(error_msg("tag (タグID)")),
             }
         }
 
@@ -89,7 +89,7 @@ impl TryFrom<MountainSearchQuery> for MountainSearchCondition {
         if let Some(sort_param) = ms.sort {
             match MountainSortCondition::try_from(sort_param) {
                 Ok(s) => sort = s,
-                Err(_) => errors.push("ソートの値が不正です。".to_string()),
+                Err(_) => errors.push(error_msg("sort")),
             }
         }
 
@@ -97,9 +97,7 @@ impl TryFrom<MountainSearchQuery> for MountainSearchCondition {
         if let Some(offset_param) = ms.offset {
             match offset_param.parse::<u64>() {
                 Ok(skip_value) => skip = skip_value,
-                Err(_) => {
-                    errors.push("オフセットの値が不正です。".to_string());
-                }
+                Err(_) => errors.push(error_msg("offset")),
             }
         }
 
@@ -108,13 +106,11 @@ impl TryFrom<MountainSearchQuery> for MountainSearchCondition {
             match limit_param.parse::<i64>() {
                 Ok(limit_value) => {
                     if limit_value < 0 {
-                        errors.push("リミットの値が不正です。".to_string());
+                        errors.push(error_msg("limit"));
                     }
                     limit = Some(limit_value)
                 }
-                Err(_) => {
-                    errors.push("リミットの値が不正です。".to_string());
-                }
+                Err(_) => errors.push(error_msg("limit")),
             }
         }
 
@@ -131,4 +127,8 @@ impl TryFrom<MountainSearchQuery> for MountainSearchCondition {
             sort,
         })
     }
+}
+
+fn error_msg(query_name: &str) -> String {
+    format!("クエリパラメータ {} の値が不正です。", query_name)
 }

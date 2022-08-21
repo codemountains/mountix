@@ -1,4 +1,4 @@
-use crate::model::Id;
+use crate::model::{ErrorCode, Id};
 
 #[derive(Debug)]
 pub struct Mountain {
@@ -223,7 +223,7 @@ impl Default for MountainSortCondition {
 }
 
 impl TryFrom<String> for MountainSortCondition {
-    type Error = anyhow::Error;
+    type Error = ();
 
     fn try_from(sort_param: String) -> Result<Self, Self::Error> {
         match sort_param.as_str() {
@@ -251,7 +251,33 @@ impl TryFrom<String> for MountainSortCondition {
                 key: MountainSortKey::Name,
                 order: MountainOrderType::Desc,
             }),
-            _ => Err(Self::Error::msg("Invalid sort value.")),
+            _ => Err(()),
+        }
+    }
+}
+
+#[derive(Debug)]
+pub struct MountainGetException {
+    pub error_code: ErrorCode,
+}
+
+impl MountainGetException {
+    pub fn new(error_code: ErrorCode) -> Self {
+        Self { error_code }
+    }
+}
+
+#[derive(Debug)]
+pub struct MountainFindException {
+    pub error_code: ErrorCode,
+    pub messages: Vec<String>,
+}
+
+impl MountainFindException {
+    pub fn new(error_code: ErrorCode, messages: Vec<String>) -> Self {
+        Self {
+            error_code,
+            messages,
         }
     }
 }

@@ -27,12 +27,19 @@ impl<T> From<i32> for Id<T> {
 }
 
 impl<T> TryFrom<String> for Id<T> {
-    type Error = anyhow::Error;
+    type Error = ErrorCode;
 
     fn try_from(value: String) -> Result<Self, Self::Error> {
         match value.parse::<i32>() {
             Ok(id) => Ok(Self::new(id)),
-            Err(_) => Err(Self::Error::msg("Invalid mountain id.")),
+            Err(_) => Err(ErrorCode::InvalidId),
         }
     }
+}
+
+#[derive(Debug, PartialEq, Eq)]
+pub enum ErrorCode {
+    InvalidId,
+    InvalidQueryParam,
+    ServerError,
 }
