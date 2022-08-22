@@ -6,10 +6,13 @@
 
 データベースは [MongoDB Atlas Database](https://www.mongodb.com/ja-jp/atlas/database) を使用します。
 
-事前にプロジェクトおよびクラスターを作成し [Connection string](https://www.mongodb.com/docs/manual/reference/connection-string/) を取得する必要があります。
+事前にプロジェクト、クラスター、データベースを作成し [Connection string](https://www.mongodb.com/docs/manual/reference/connection-string/) を取得する必要があります。
+
+Examples:
 
 - Project Name: `mountix`
 - Cluster Name: `Mountix-Cluster0`
+- Database Name: `mountix_db`
 
 ```shell
 cd ./migrations/
@@ -17,7 +20,8 @@ cd ./migrations/
 cd ../
 ```
 
-Note: 
+Note:
+
 - macOS Monterey version 12.5 でのみ動作確認済みです。
 - `mongoimport`については [MongoDB Database Tools 公式ドキュメント](https://www.mongodb.com/docs/database-tools/)を確認してください。
 
