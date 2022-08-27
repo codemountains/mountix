@@ -61,7 +61,7 @@ impl TryFrom<SurroundingMountainSearchCondition> for SurroundingMountainFindComm
             sc.mountain.location.longitude,
             sc.mountain.location.latitude,
         );
-        let filter = doc! {"$and": [{"location":{"$near": {"$geometry": { "type": "Point",  "coordinates": [coordinates.0, coordinates.1]},"$minDistance": 0,"$maxDistance": sc.distance.0}}}, {"_id": {"$ne": &sc.mountain.id.value}}]};
+        let filter = doc! {"$and": [{"location":{"$nearSphere": {"$geometry": { "type": "Point",  "coordinates": [coordinates.0, coordinates.1]},"$minDistance": 0,"$maxDistance": sc.distance.0}}}, {"_id": {"$ne": &sc.mountain.id.value}}]};
 
         Ok(SurroundingMountainFindCommand { filter })
     }
