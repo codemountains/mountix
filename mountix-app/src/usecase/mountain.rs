@@ -1,4 +1,4 @@
-use crate::model::mountain::{FoundMountains, MountainSearchQuery, SearchedMountain};
+use crate::model::mountain::{MountainSearchQuery, SearchedMountain, SearchedMountainResult};
 use mountix_adapter::modules::RepositoriesModuleExt;
 use mountix_kernel::model::mountain::{
     MountainFindException, MountainGetException, MountainSearchCondition,
@@ -33,7 +33,7 @@ impl<R: RepositoriesModuleExt> MountainUseCase<R> {
     pub async fn find(
         &self,
         search_query: MountainSearchQuery,
-    ) -> Result<FoundMountains, MountainFindException> {
+    ) -> Result<SearchedMountainResult, MountainFindException> {
         match MountainSearchCondition::try_from(search_query) {
             Ok(condition) => {
                 let offset = condition.skip.clone();
@@ -56,10 +56,8 @@ impl<R: RepositoriesModuleExt> MountainUseCase<R> {
                     .await
                 {
                     Ok(mountains) => {
-                        let mut searched_mountains: Vec<SearchedMountain> = Vec::new();
-                        for m in mountains {
-                            searched_mountains.push(m.into());
-                        }
+                        let searched_mountains: Vec<SearchedMountain> =
+                            mountains.into_iter().map(|m| m.into()).collect();
 
                         let mut limit: Option<u64> = None;
                         if let Some(limit_value) = condition_limit {
@@ -68,7 +66,7 @@ impl<R: RepositoriesModuleExt> MountainUseCase<R> {
                             }
                         }
 
-                        Ok(FoundMountains {
+                        Ok(SearchedMountainResult {
                             mountains: searched_mountains,
                             total,
                             offset,

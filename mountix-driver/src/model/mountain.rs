@@ -1,8 +1,9 @@
+use crate::model::JsonErrorResponse;
 use axum::http::StatusCode;
 use axum::response::{IntoResponse, Response};
 use axum::Json;
 use mountix_app::model::mountain::{
-    FoundMountains, MountainSearchQuery, SearchedLocation, SearchedMountain,
+    MountainSearchQuery, SearchedMountain, SearchedMountainLocation, SearchedMountainResult,
 };
 use serde::{Deserialize, Serialize};
 
@@ -15,13 +16,13 @@ pub struct JsonMountain {
     pub area: String,
     pub prefectures: Vec<String>,
     pub elevation: u32,
-    pub location: JsonLocation,
+    pub location: JsonMountainLocation,
     pub tags: Vec<String>,
 }
 
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct JsonLocation {
+pub struct JsonMountainLocation {
     pub latitude: f64,
     pub longitude: f64,
     pub gsi_url: String,
@@ -42,8 +43,8 @@ impl From<SearchedMountain> for JsonMountain {
     }
 }
 
-impl From<SearchedLocation> for JsonLocation {
-    fn from(searched_location: SearchedLocation) -> Self {
+impl From<SearchedMountainLocation> for JsonMountainLocation {
+    fn from(searched_location: SearchedMountainLocation) -> Self {
         Self {
             latitude: searched_location.latitude,
             longitude: searched_location.longitude,
@@ -61,18 +62,19 @@ pub struct JsonMountainsResponse {
     limit: Option<u64>,
 }
 
-impl From<FoundMountains> for JsonMountainsResponse {
-    fn from(fm: FoundMountains) -> Self {
-        let mut mountains: Vec<JsonMountain> = Vec::new();
-        for sm in fm.mountains {
-            mountains.push(sm.into());
-        }
+impl From<SearchedMountainResult> for JsonMountainsResponse {
+    fn from(result: SearchedMountainResult) -> Self {
+        let mountains = result
+            .mountains
+            .into_iter()
+            .map(|mountain| mountain.into())
+            .collect();
 
         Self {
             mountains,
-            total: fm.total,
-            offset: fm.offset,
-            limit: fm.limit,
+            total: result.total,
+            offset: result.offset,
+            limit: result.limit,
         }
     }
 }
@@ -100,18 +102,6 @@ impl From<MountainQuery> for MountainSearchQuery {
     }
 }
 
-#[derive(Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct JsonMountainsErrorResponse {
-    messages: Vec<String>,
-}
-
-impl JsonMountainsErrorResponse {
-    pub(crate) fn new(messages: Vec<String>) -> Self {
-        Self { messages }
-    }
-}
-
 pub enum MountainError {
     NotFound,
     ServerError,
@@ -121,14 +111,13 @@ impl IntoResponse for MountainError {
     fn into_response(self) -> Response {
         match self {
             MountainError::NotFound => {
-                let json = JsonMountainsErrorResponse::new(vec![
-                    "山岳情報が見つかりませんでした。".to_string(),
-                ]);
+                let json =
+                    JsonErrorResponse::new(vec!["山岳情報が見つかりませんでした。".to_string()]);
                 (StatusCode::NOT_FOUND, Json(json)).into_response()
             }
             MountainError::ServerError => {
-                let json = JsonMountainsErrorResponse::new(vec![
-                    "山岳情報を検索中にエラーが発生しました。".to_string(),
+                let json = JsonErrorResponse::new(vec![
+                    "山岳情報を検索中にエラーが発生しました。".to_string()
                 ]);
                 (StatusCode::INTERNAL_SERVER_ERROR, Json(json)).into_response()
             }

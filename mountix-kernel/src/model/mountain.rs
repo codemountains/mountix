@@ -8,12 +8,12 @@ pub struct Mountain {
     pub area: String,
     pub prefectures: Vec<String>,
     pub elevation: u32,
-    pub location: Location,
+    pub location: MountainLocation,
     pub tags: Vec<String>,
 }
 
 #[derive(Debug)]
-pub struct Location {
+pub struct MountainLocation {
     pub latitude: f64,
     pub longitude: f64,
     pub gsi_url: String,
@@ -27,7 +27,7 @@ impl Mountain {
         area: String,
         prefectures: Vec<String>,
         elevation: u32,
-        location: Location,
+        location: MountainLocation,
         tags: Vec<String>,
     ) -> Self {
         Self {
@@ -43,7 +43,7 @@ impl Mountain {
     }
 }
 
-impl Location {
+impl MountainLocation {
     pub fn new(latitude: f64, longitude: f64, gsi_url: String) -> Self {
         Self {
             latitude,
@@ -57,10 +57,10 @@ impl Location {
 pub struct MountainSearchCondition {
     pub name: Option<String>,
     pub prefecture: Option<MountainPrefecture>,
-    pub tag: Option<MountainsTag>,
+    pub tag: Option<MountainTag>,
     pub skip: u64,
     pub limit: Option<i64>,
-    pub sort: MountainSortCondition,
+    pub sort: MountainSortDocument,
 }
 
 #[derive(Debug, Clone)]
@@ -144,12 +144,12 @@ impl TryFrom<String> for MountainPrefecture {
 }
 
 #[derive(Debug, Clone)]
-pub struct MountainsTag {
+pub struct MountainTag {
     pub id: u64,
     pub name: String,
 }
 
-impl MountainsTag {
+impl MountainTag {
     const TAGS: [(u64, &'static str); 2] = [(1, "百名山"), (2, "二百名山")];
 
     fn new(id: u64, name: String) -> Self {
@@ -157,15 +157,15 @@ impl MountainsTag {
     }
 }
 
-impl TryFrom<String> for MountainsTag {
+impl TryFrom<String> for MountainTag {
     type Error = anyhow::Error;
 
     fn try_from(tag_param: String) -> Result<Self, Self::Error> {
         match tag_param.parse::<u64>() {
             Ok(tag_id) => {
-                for tag in MountainsTag::TAGS {
+                for tag in MountainTag::TAGS {
                     if tag.0 == tag_id {
-                        return Ok(MountainsTag::new(tag.0, tag.1.to_string()));
+                        return Ok(MountainTag::new(tag.0, tag.1.to_string()));
                     }
                 }
                 Err(Self::Error::msg("Invalid tag value."))
@@ -208,12 +208,12 @@ impl MountainOrderType {
 }
 
 #[derive(Debug, Copy, Clone)]
-pub struct MountainSortCondition {
+pub struct MountainSortDocument {
     pub key: MountainSortKey,
     pub order: MountainOrderType,
 }
 
-impl Default for MountainSortCondition {
+impl Default for MountainSortDocument {
     fn default() -> Self {
         Self {
             key: MountainSortKey::Id,
@@ -222,32 +222,32 @@ impl Default for MountainSortCondition {
     }
 }
 
-impl TryFrom<String> for MountainSortCondition {
+impl TryFrom<String> for MountainSortDocument {
     type Error = ();
 
     fn try_from(sort_param: String) -> Result<Self, Self::Error> {
         match sort_param.as_str() {
-            "id.asc" => Ok(MountainSortCondition {
+            "id.asc" => Ok(MountainSortDocument {
                 key: MountainSortKey::Id,
                 order: MountainOrderType::Asc,
             }),
-            "id.desc" => Ok(MountainSortCondition {
+            "id.desc" => Ok(MountainSortDocument {
                 key: MountainSortKey::Id,
                 order: MountainOrderType::Desc,
             }),
-            "elevation.asc" => Ok(MountainSortCondition {
+            "elevation.asc" => Ok(MountainSortDocument {
                 key: MountainSortKey::Elevation,
                 order: MountainOrderType::Asc,
             }),
-            "elevation.desc" => Ok(MountainSortCondition {
+            "elevation.desc" => Ok(MountainSortDocument {
                 key: MountainSortKey::Elevation,
                 order: MountainOrderType::Desc,
             }),
-            "name.asc" => Ok(MountainSortCondition {
+            "name.asc" => Ok(MountainSortDocument {
                 key: MountainSortKey::Name,
                 order: MountainOrderType::Asc,
             }),
-            "name.desc" => Ok(MountainSortCondition {
+            "name.desc" => Ok(MountainSortDocument {
                 key: MountainSortKey::Name,
                 order: MountainOrderType::Desc,
             }),
