@@ -1,7 +1,11 @@
-use crate::model::mountain::{FoundMountains, MountainSearchQuery, SearchedMountain};
+use crate::model::mountain::{
+    MountainBoxSearchQuery, MountainSearchQuery, SearchedBoxMountainResult, SearchedMountain,
+    SearchedMountainResult,
+};
 use mountix_adapter::modules::RepositoriesModuleExt;
 use mountix_kernel::model::mountain::{
-    MountainFindException, MountainGetException, MountainSearchCondition,
+    MountainBoxSearchCondition, MountainFindException, MountainGetException,
+    MountainSearchCondition,
 };
 use mountix_kernel::model::ErrorCode;
 use mountix_kernel::repository::mountain::MountainRepository;
@@ -33,7 +37,7 @@ impl<R: RepositoriesModuleExt> MountainUseCase<R> {
     pub async fn find(
         &self,
         search_query: MountainSearchQuery,
-    ) -> Result<FoundMountains, MountainFindException> {
+    ) -> Result<SearchedMountainResult, MountainFindException> {
         match MountainSearchCondition::try_from(search_query) {
             Ok(condition) => {
                 let offset = condition.skip.clone();
@@ -56,10 +60,8 @@ impl<R: RepositoriesModuleExt> MountainUseCase<R> {
                     .await
                 {
                     Ok(mountains) => {
-                        let mut searched_mountains: Vec<SearchedMountain> = Vec::new();
-                        for m in mountains {
-                            searched_mountains.push(m.into());
-                        }
+                        let searched_mountains: Vec<SearchedMountain> =
+                            mountains.into_iter().map(|m| m.into()).collect();
 
                         let mut limit: Option<u64> = None;
                         if let Some(limit_value) = condition_limit {
@@ -68,11 +70,46 @@ impl<R: RepositoriesModuleExt> MountainUseCase<R> {
                             }
                         }
 
-                        Ok(FoundMountains {
+                        Ok(SearchedMountainResult {
                             mountains: searched_mountains,
                             total,
                             offset,
                             limit,
+                        })
+                    }
+                    Err(_) => Err(MountainFindException::new(
+                        ErrorCode::ServerError,
+                        vec!["山岳情報を検索中にエラーが発生しました。".to_string()],
+                    )),
+                }
+            }
+            Err(error_messages) => Err(MountainFindException::new(
+                ErrorCode::InvalidQueryParam,
+                error_messages,
+            )),
+        }
+    }
+
+    pub async fn find_box(
+        &self,
+        search_query: MountainBoxSearchQuery,
+    ) -> Result<SearchedBoxMountainResult, MountainFindException> {
+        match MountainBoxSearchCondition::try_from(search_query) {
+            Ok(condition) => {
+                match self
+                    .repositories
+                    .mountain_repository()
+                    .find_box(condition)
+                    .await
+                {
+                    Ok(mountains) => {
+                        let searched_mountains: Vec<SearchedMountain> =
+                            mountains.into_iter().map(|m| m.into()).collect();
+                        let total = searched_mountains.len() as u64;
+
+                        Ok(SearchedBoxMountainResult {
+                            mountains: searched_mountains,
+                            total,
                         })
                     }
                     Err(_) => Err(MountainFindException::new(

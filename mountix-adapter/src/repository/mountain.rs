@@ -1,9 +1,11 @@
-use crate::model::mountain::{MountainDocument, MountainFindCommand};
+use crate::model::mountain::{MountainDocument, MountainFindBoxCommand, MountainFindCommand};
 use crate::repository::MongoDBRepositoryImpl;
 use async_trait::async_trait;
 use futures::stream::TryStreamExt;
 use mongodb::bson::doc;
-use mountix_kernel::model::mountain::{Mountain, MountainSearchCondition};
+use mountix_kernel::model::mountain::{
+    Mountain, MountainBoxSearchCondition, MountainSearchCondition,
+};
 use mountix_kernel::model::Id;
 use mountix_kernel::repository::mountain::MountainRepository;
 
@@ -36,6 +38,25 @@ impl MountainRepository for MongoDBRepositoryImpl<Mountain> {
         let collection = self.db.0.collection::<MountainDocument>("mountains");
 
         let find_command: MountainFindCommand = search_condition.try_into()?;
+        let mut mountain_doc_list = collection
+            .find(find_command.filter, find_command.options)
+            .await?;
+
+        let mut mountains: Vec<Mountain> = Vec::new();
+        while let Some(md) = mountain_doc_list.try_next().await? {
+            mountains.push(md.try_into()?);
+        }
+
+        Ok(mountains)
+    }
+
+    async fn find_box(
+        &self,
+        search_condition: MountainBoxSearchCondition,
+    ) -> anyhow::Result<Vec<Mountain>> {
+        let collection = self.db.0.collection::<MountainDocument>("mountains");
+
+        let find_command: MountainFindBoxCommand = search_condition.try_into()?;
         let mut mountain_doc_list = collection
             .find(find_command.filter, find_command.options)
             .await?;

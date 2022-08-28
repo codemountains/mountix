@@ -1,7 +1,7 @@
 use crate::model::Id;
 use async_trait::async_trait;
 
-use crate::model::mountain::{Mountain, MountainSearchCondition};
+use crate::model::mountain::{Mountain, MountainBoxSearchCondition, MountainSearchCondition};
 
 #[async_trait]
 pub trait MountainRepository {
@@ -10,5 +10,9 @@ pub trait MountainRepository {
     async fn find(
         &self,
         search_condition: MountainSearchCondition,
+    ) -> anyhow::Result<Vec<Mountain>>;
+    async fn find_box(
+        &self,
+        search_condition: MountainBoxSearchCondition,
     ) -> anyhow::Result<Vec<Mountain>>;
 }

@@ -1,4 +1,5 @@
 use crate::model::{ErrorCode, Id};
+use regex::Regex;
 
 #[derive(Debug)]
 pub struct Mountain {
@@ -8,12 +9,12 @@ pub struct Mountain {
     pub area: String,
     pub prefectures: Vec<String>,
     pub elevation: u32,
-    pub location: Location,
+    pub location: MountainLocation,
     pub tags: Vec<String>,
 }
 
 #[derive(Debug)]
-pub struct Location {
+pub struct MountainLocation {
     pub latitude: f64,
     pub longitude: f64,
     pub gsi_url: String,
@@ -27,7 +28,7 @@ impl Mountain {
         area: String,
         prefectures: Vec<String>,
         elevation: u32,
-        location: Location,
+        location: MountainLocation,
         tags: Vec<String>,
     ) -> Self {
         Self {
@@ -43,7 +44,7 @@ impl Mountain {
     }
 }
 
-impl Location {
+impl MountainLocation {
     pub fn new(latitude: f64, longitude: f64, gsi_url: String) -> Self {
         Self {
             latitude,
@@ -57,7 +58,7 @@ impl Location {
 pub struct MountainSearchCondition {
     pub name: Option<String>,
     pub prefecture: Option<MountainPrefecture>,
-    pub tag: Option<MountainsTag>,
+    pub tag: Option<MountainTag>,
     pub skip: u64,
     pub limit: Option<i64>,
     pub sort: MountainSortCondition,
@@ -144,12 +145,12 @@ impl TryFrom<String> for MountainPrefecture {
 }
 
 #[derive(Debug, Clone)]
-pub struct MountainsTag {
+pub struct MountainTag {
     pub id: u64,
     pub name: String,
 }
 
-impl MountainsTag {
+impl MountainTag {
     const TAGS: [(u64, &'static str); 2] = [(1, "百名山"), (2, "二百名山")];
 
     fn new(id: u64, name: String) -> Self {
@@ -157,15 +158,15 @@ impl MountainsTag {
     }
 }
 
-impl TryFrom<String> for MountainsTag {
+impl TryFrom<String> for MountainTag {
     type Error = anyhow::Error;
 
     fn try_from(tag_param: String) -> Result<Self, Self::Error> {
         match tag_param.parse::<u64>() {
             Ok(tag_id) => {
-                for tag in MountainsTag::TAGS {
+                for tag in MountainTag::TAGS {
                     if tag.0 == tag_id {
-                        return Ok(MountainsTag::new(tag.0, tag.1.to_string()));
+                        return Ok(MountainTag::new(tag.0, tag.1.to_string()));
                     }
                 }
                 Err(Self::Error::msg("Invalid tag value."))
@@ -253,6 +254,73 @@ impl TryFrom<String> for MountainSortCondition {
             }),
             _ => Err(()),
         }
+    }
+}
+
+pub struct MountainBoxSearchCondition {
+    pub box_coordinates: MountainBoxCoordinates,
+    pub name: Option<String>,
+    pub tag: Option<MountainTag>,
+    pub sort: MountainSortCondition,
+}
+
+pub struct MountainBoxCoordinates {
+    pub bottom_left: (f64, f64),
+    pub upper_right: (f64, f64),
+}
+
+impl TryFrom<String> for MountainBoxCoordinates {
+    type Error = anyhow::Error;
+
+    fn try_from(box_param: String) -> Result<Self, Self::Error> {
+        let re = Regex::new(
+            r"\(([+-]?\d+(?:\.\d+)?),([+-]?\d+(?:\.\d+)?)\),\(([+-]?\d+(?:\.\d+)?),([+-]?\d+(?:\.\d+)?)\)",
+        )?;
+
+        let caps = re
+            .captures(box_param.as_str())
+            .ok_or(Self::Error::msg("Invalid box parameter."))?;
+
+        let bottom_left_lng = caps
+            .get(1)
+            .ok_or(Self::Error::msg("Invalid bottom left longitude."))?
+            .as_str()
+            .parse::<f64>()?;
+        if bottom_left_lng > 180.0 || bottom_left_lng < -180.0 {
+            return Err(Self::Error::msg("Invalid bottom left longitude."));
+        }
+
+        let bottom_left_lat = caps
+            .get(2)
+            .ok_or(Self::Error::msg("Invalid bottom left latitude."))?
+            .as_str()
+            .parse::<f64>()?;
+        if bottom_left_lat > 90.0 || bottom_left_lat < -90.0 {
+            return Err(Self::Error::msg("Invalid bottom left latitude."));
+        }
+
+        let upper_right_lng = caps
+            .get(3)
+            .ok_or(Self::Error::msg("Invalid upper right longitude."))?
+            .as_str()
+            .parse::<f64>()?;
+        if upper_right_lng > 180.0 || upper_right_lng < -180.0 {
+            return Err(Self::Error::msg("Invalid upper right longitude."));
+        }
+
+        let upper_right_lat = caps
+            .get(4)
+            .ok_or(Self::Error::msg("Invalid upper right latitude."))?
+            .as_str()
+            .parse::<f64>()?;
+        if upper_right_lat > 90.0 || upper_right_lat < -90.0 {
+            return Err(Self::Error::msg("Invalid upper right latitude."));
+        }
+
+        Ok(MountainBoxCoordinates {
+            bottom_left: (bottom_left_lng, bottom_left_lat),
+            upper_right: (upper_right_lng, upper_right_lat),
+        })
     }
 }
 

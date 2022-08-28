@@ -1,9 +1,10 @@
 [package]
 name = "mountix-kernel"
-version = "1.0.0"
+version = "1.1.0"
 edition = "2021"
 
 [dependencies]
 anyhow = "1.0.58"
 async-trait = "0.1.56"
 serde = { version = "1.0", features = ["derive"] }
+regex = "1.6.0"

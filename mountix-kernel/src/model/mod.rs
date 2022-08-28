@@ -1,6 +1,7 @@
 use std::marker::PhantomData;
 
 pub mod mountain;
+pub mod surrounding_mountain;
 
 #[derive(Debug)]
 pub struct Id<T> {

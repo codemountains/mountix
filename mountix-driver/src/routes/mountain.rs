@@ -1,6 +1,8 @@
 use crate::model::mountain::{
-    JsonMountain, JsonMountainsErrorResponse, JsonMountainsResponse, MountainError, MountainQuery,
+    JsonBoxMountainsResponse, JsonMountain, JsonMountainsResponse, MountainBoxQuery, MountainError,
+    MountainQuery,
 };
+use crate::model::JsonErrorResponse;
 use crate::module::{Modules, ModulesExt};
 use axum::extract::{Path, Query};
 use axum::http::StatusCode;
@@ -28,7 +30,7 @@ pub async fn get_mountain(
                 None => {
                     tracing::info!("Succeeded to get mountain by id (None).");
                     Err(MountainError::NotFound)
-                },
+                }
             }
         }
         Err(get_ex) => {
@@ -50,21 +52,59 @@ pub async fn find_mountains(
 
     let res = modules.mountain_use_case().find(search_query).await;
     match res {
-        Ok(fm) => {
-            tracing::info!("Succeeded to find {} mountains.", &fm.mountains.len());
+        Ok(result) => {
+            tracing::info!("Succeeded to find {} mountains.", &result.mountains.len());
 
-            let json: JsonMountainsResponse = fm.into();
+            let json: JsonMountainsResponse = result.into();
             Ok((StatusCode::OK, Json(json)))
         }
         Err(find_ex) => {
             error!("{:?}", find_ex);
 
-            let json = JsonMountainsErrorResponse::new(find_ex.messages);
+            let json = JsonErrorResponse::new(find_ex.messages);
             if find_ex.error_code == ErrorCode::ServerError {
                 Err((StatusCode::INTERNAL_SERVER_ERROR, Json(json)))
             } else {
                 Err((StatusCode::BAD_REQUEST, Json(json)))
             }
+        }
+    }
+}
+
+pub async fn find_mountains_by_box(
+    Query(query): Query<MountainBoxQuery>,
+    Extension(modules): Extension<Arc<Modules>>,
+) -> Result<impl IntoResponse, impl IntoResponse> {
+    match query.try_into() {
+        Ok(search_query) => {
+            let res = modules.mountain_use_case().find_box(search_query).await;
+            match res {
+                Ok(result) => {
+                    tracing::info!(
+                        "Succeeded to find {} mountains by box.",
+                        &result.mountains.len()
+                    );
+
+                    let json: JsonBoxMountainsResponse = result.into();
+                    Ok((StatusCode::OK, Json(json)))
+                }
+                Err(find_ex) => {
+                    error!("{:?}", find_ex);
+
+                    let json = JsonErrorResponse::new(find_ex.messages);
+                    if find_ex.error_code == ErrorCode::ServerError {
+                        Err((StatusCode::INTERNAL_SERVER_ERROR, Json(json)))
+                    } else {
+                        Err((StatusCode::BAD_REQUEST, Json(json)))
+                    }
+                }
+            }
+        }
+        Err(messages) => {
+            error!("{:?}", messages);
+
+            let json = JsonErrorResponse::new(messages);
+            Err((StatusCode::BAD_REQUEST, Json(json)))
         }
     }
 }
