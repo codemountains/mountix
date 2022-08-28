@@ -3,7 +3,8 @@ use axum::http::StatusCode;
 use axum::response::{IntoResponse, Response};
 use axum::Json;
 use mountix_app::model::mountain::{
-    MountainSearchQuery, SearchedMountain, SearchedMountainLocation, SearchedMountainResult,
+    MountainBoxSearchQuery, MountainSearchQuery, SearchedBoxMountainResult, SearchedMountain,
+    SearchedMountainLocation, SearchedMountainResult,
 };
 use serde::{Deserialize, Serialize};
 
@@ -98,6 +99,52 @@ impl From<MountainQuery> for MountainSearchQuery {
             offset: mq.offset,
             limit: mq.limit,
             sort: mq.sort,
+        }
+    }
+}
+
+#[derive(Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct JsonBoxMountainsResponse {
+    mountains: Vec<JsonMountain>,
+    total: u64,
+}
+
+impl From<SearchedBoxMountainResult> for JsonBoxMountainsResponse {
+    fn from(result: SearchedBoxMountainResult) -> Self {
+        let mountains = result
+            .mountains
+            .into_iter()
+            .map(|mountain| mountain.into())
+            .collect();
+
+        Self {
+            mountains,
+            total: result.total,
+        }
+    }
+}
+
+#[derive(Debug, Deserialize)]
+pub struct MountainBoxQuery {
+    r#box: Option<String>,
+    name: Option<String>,
+    tag: Option<String>,
+    sort: Option<String>,
+}
+
+impl TryFrom<MountainBoxQuery> for MountainBoxSearchQuery {
+    type Error = Vec<String>;
+
+    fn try_from(bq: MountainBoxQuery) -> Result<Self, Self::Error> {
+        match bq.r#box {
+            Some(box_param) => Ok(MountainBoxSearchQuery {
+                box_coordinates: box_param,
+                name: bq.name,
+                tag: bq.tag,
+                sort: bq.sort,
+            }),
+            None => Err(vec!["クエリパラメータ box=(bottom left longitude,bottom left latitude),(upper right longitude,upper right latitude) は必須です。".to_string()]),
         }
     }
 }

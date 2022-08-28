@@ -1,7 +1,7 @@
 use crate::model::invalid_param_error;
 use mountix_kernel::model::mountain::{
-    Mountain, MountainLocation, MountainPrefecture, MountainSearchCondition, MountainSortDocument,
-    MountainTag,
+    Mountain, MountainBoxCoordinates, MountainBoxSearchCondition, MountainLocation,
+    MountainPrefecture, MountainSearchCondition, MountainSortCondition, MountainTag,
 };
 
 pub struct SearchedMountain {
@@ -86,9 +86,9 @@ impl TryFrom<MountainSearchQuery> for MountainSearchCondition {
             }
         }
 
-        let mut sort: MountainSortDocument = Default::default();
+        let mut sort: MountainSortCondition = Default::default();
         if let Some(sort_param) = ms.sort {
-            match MountainSortDocument::try_from(sort_param) {
+            match MountainSortCondition::try_from(sort_param) {
                 Ok(s) => sort = s,
                 Err(_) => errors.push(invalid_param_error("sort")),
             }
@@ -125,6 +125,64 @@ impl TryFrom<MountainSearchQuery> for MountainSearchCondition {
             tag,
             skip,
             limit,
+            sort,
+        })
+    }
+}
+
+pub struct SearchedBoxMountainResult {
+    pub mountains: Vec<SearchedMountain>,
+    pub total: u64,
+}
+
+pub struct MountainBoxSearchQuery {
+    pub box_coordinates: String,
+    pub name: Option<String>,
+    pub tag: Option<String>,
+    pub sort: Option<String>,
+}
+
+impl TryFrom<MountainBoxSearchQuery> for MountainBoxSearchCondition {
+    type Error = Vec<String>;
+
+    fn try_from(query: MountainBoxSearchQuery) -> Result<Self, Self::Error> {
+        let mut errors: Vec<String> = Vec::new();
+
+        let mut box_coordinates = MountainBoxCoordinates {
+            bottom_left: (0.0, 0.0),
+            upper_right: (0.0, 0.0),
+        };
+        match query.box_coordinates.try_into() {
+            Ok(bc) => box_coordinates = bc,
+            Err(_) => errors.push(invalid_param_error("box")),
+        }
+
+        let name = query.name;
+
+        let mut tag: Option<MountainTag> = None;
+        if let Some(tag_param) = query.tag {
+            match MountainTag::try_from(tag_param) {
+                Ok(t) => tag = Some(t),
+                Err(_) => errors.push(invalid_param_error("tag (タグID)")),
+            }
+        }
+
+        let mut sort: MountainSortCondition = Default::default();
+        if let Some(sort_param) = query.sort {
+            match MountainSortCondition::try_from(sort_param) {
+                Ok(s) => sort = s,
+                Err(_) => errors.push(invalid_param_error("sort")),
+            }
+        }
+
+        if errors.len() > 0 {
+            return Err(errors);
+        }
+
+        Ok(MountainBoxSearchCondition {
+            box_coordinates,
+            name,
+            tag,
             sort,
         })
     }

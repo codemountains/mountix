@@ -1,4 +1,5 @@
 use crate::model::{ErrorCode, Id};
+use regex::Regex;
 
 #[derive(Debug)]
 pub struct Mountain {
@@ -60,7 +61,7 @@ pub struct MountainSearchCondition {
     pub tag: Option<MountainTag>,
     pub skip: u64,
     pub limit: Option<i64>,
-    pub sort: MountainSortDocument,
+    pub sort: MountainSortCondition,
 }
 
 #[derive(Debug, Clone)]
@@ -208,12 +209,12 @@ impl MountainOrderType {
 }
 
 #[derive(Debug, Copy, Clone)]
-pub struct MountainSortDocument {
+pub struct MountainSortCondition {
     pub key: MountainSortKey,
     pub order: MountainOrderType,
 }
 
-impl Default for MountainSortDocument {
+impl Default for MountainSortCondition {
     fn default() -> Self {
         Self {
             key: MountainSortKey::Id,
@@ -222,37 +223,104 @@ impl Default for MountainSortDocument {
     }
 }
 
-impl TryFrom<String> for MountainSortDocument {
+impl TryFrom<String> for MountainSortCondition {
     type Error = ();
 
     fn try_from(sort_param: String) -> Result<Self, Self::Error> {
         match sort_param.as_str() {
-            "id.asc" => Ok(MountainSortDocument {
+            "id.asc" => Ok(MountainSortCondition {
                 key: MountainSortKey::Id,
                 order: MountainOrderType::Asc,
             }),
-            "id.desc" => Ok(MountainSortDocument {
+            "id.desc" => Ok(MountainSortCondition {
                 key: MountainSortKey::Id,
                 order: MountainOrderType::Desc,
             }),
-            "elevation.asc" => Ok(MountainSortDocument {
+            "elevation.asc" => Ok(MountainSortCondition {
                 key: MountainSortKey::Elevation,
                 order: MountainOrderType::Asc,
             }),
-            "elevation.desc" => Ok(MountainSortDocument {
+            "elevation.desc" => Ok(MountainSortCondition {
                 key: MountainSortKey::Elevation,
                 order: MountainOrderType::Desc,
             }),
-            "name.asc" => Ok(MountainSortDocument {
+            "name.asc" => Ok(MountainSortCondition {
                 key: MountainSortKey::Name,
                 order: MountainOrderType::Asc,
             }),
-            "name.desc" => Ok(MountainSortDocument {
+            "name.desc" => Ok(MountainSortCondition {
                 key: MountainSortKey::Name,
                 order: MountainOrderType::Desc,
             }),
             _ => Err(()),
         }
+    }
+}
+
+pub struct MountainBoxSearchCondition {
+    pub box_coordinates: MountainBoxCoordinates,
+    pub name: Option<String>,
+    pub tag: Option<MountainTag>,
+    pub sort: MountainSortCondition,
+}
+
+pub struct MountainBoxCoordinates {
+    pub bottom_left: (f64, f64),
+    pub upper_right: (f64, f64),
+}
+
+impl TryFrom<String> for MountainBoxCoordinates {
+    type Error = anyhow::Error;
+
+    fn try_from(box_param: String) -> Result<Self, Self::Error> {
+        let re = Regex::new(
+            r"\(([+-]?\d+(?:\.\d+)?),([+-]?\d+(?:\.\d+)?)\),\(([+-]?\d+(?:\.\d+)?),([+-]?\d+(?:\.\d+)?)\)",
+        )?;
+
+        let caps = re
+            .captures(box_param.as_str())
+            .ok_or(Self::Error::msg("Invalid box parameter."))?;
+
+        let bottom_left_lng = caps
+            .get(1)
+            .ok_or(Self::Error::msg("Invalid bottom left longitude."))?
+            .as_str()
+            .parse::<f64>()?;
+        if bottom_left_lng > 180.0 || bottom_left_lng < -180.0 {
+            return Err(Self::Error::msg("Invalid bottom left longitude."));
+        }
+
+        let bottom_left_lat = caps
+            .get(2)
+            .ok_or(Self::Error::msg("Invalid bottom left latitude."))?
+            .as_str()
+            .parse::<f64>()?;
+        if bottom_left_lat > 90.0 || bottom_left_lat < -90.0 {
+            return Err(Self::Error::msg("Invalid bottom left latitude."));
+        }
+
+        let upper_right_lng = caps
+            .get(3)
+            .ok_or(Self::Error::msg("Invalid upper right longitude."))?
+            .as_str()
+            .parse::<f64>()?;
+        if upper_right_lng > 180.0 || upper_right_lng < -180.0 {
+            return Err(Self::Error::msg("Invalid upper right longitude."));
+        }
+
+        let upper_right_lat = caps
+            .get(4)
+            .ok_or(Self::Error::msg("Invalid upper right latitude."))?
+            .as_str()
+            .parse::<f64>()?;
+        if upper_right_lat > 90.0 || upper_right_lat < -90.0 {
+            return Err(Self::Error::msg("Invalid upper right latitude."));
+        }
+
+        Ok(MountainBoxCoordinates {
+            bottom_left: (bottom_left_lng, bottom_left_lat),
+            upper_right: (upper_right_lng, upper_right_lat),
+        })
     }
 }
 

@@ -1,6 +1,8 @@
 use mongodb::bson::{doc, Document};
 use mongodb::options::FindOptions;
-use mountix_kernel::model::mountain::{Mountain, MountainLocation, MountainSearchCondition};
+use mountix_kernel::model::mountain::{
+    Mountain, MountainBoxSearchCondition, MountainLocation, MountainSearchCondition,
+};
 use mountix_kernel::model::Id;
 use serde::{Deserialize, Serialize};
 
@@ -89,5 +91,40 @@ impl TryFrom<MountainSearchCondition> for MountainFindCommand {
             .build();
 
         Ok(MountainFindCommand { filter, options })
+    }
+}
+
+pub struct MountainFindBoxCommand {
+    pub(crate) filter: Document,
+    pub(crate) options: FindOptions,
+}
+
+impl TryFrom<MountainBoxSearchCondition> for MountainFindBoxCommand {
+    type Error = anyhow::Error;
+
+    fn try_from(sc: MountainBoxSearchCondition) -> Result<Self, Self::Error> {
+        let mut filter = Document::new();
+        let mut and_doc = vec![
+            doc! {"location": {"$geoWithin": {"$box": [[sc.box_coordinates.bottom_left.0,sc.box_coordinates.bottom_left.1], [sc.box_coordinates.upper_right.0,sc.box_coordinates.upper_right.1]]}}},
+        ];
+
+        if let Some(name) = sc.name {
+            and_doc.push(doc! {"$or": [{"name": {"$regex": &name, "$options": "i"}}, {"name_kana": {"$regex": &name, "$options": "i"}}]});
+        }
+
+        if let Some(tag) = sc.tag {
+            let tag_name = tag.name;
+            and_doc.push(doc! {"tags": &tag_name});
+        }
+
+        filter.insert("$and", and_doc);
+
+        let key = sc.sort.key.to_key();
+        let value = sc.sort.order.to_value();
+        let sort_doc = doc! {key: value};
+
+        let options = FindOptions::builder().sort(sort_doc).build();
+
+        Ok(MountainFindBoxCommand { filter, options })
     }
 }

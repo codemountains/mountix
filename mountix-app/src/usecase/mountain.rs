@@ -1,7 +1,11 @@
-use crate::model::mountain::{MountainSearchQuery, SearchedMountain, SearchedMountainResult};
+use crate::model::mountain::{
+    MountainBoxSearchQuery, MountainSearchQuery, SearchedBoxMountainResult, SearchedMountain,
+    SearchedMountainResult,
+};
 use mountix_adapter::modules::RepositoriesModuleExt;
 use mountix_kernel::model::mountain::{
-    MountainFindException, MountainGetException, MountainSearchCondition,
+    MountainBoxSearchCondition, MountainFindException, MountainGetException,
+    MountainSearchCondition,
 };
 use mountix_kernel::model::ErrorCode;
 use mountix_kernel::repository::mountain::MountainRepository;
@@ -71,6 +75,41 @@ impl<R: RepositoriesModuleExt> MountainUseCase<R> {
                             total,
                             offset,
                             limit,
+                        })
+                    }
+                    Err(_) => Err(MountainFindException::new(
+                        ErrorCode::ServerError,
+                        vec!["山岳情報を検索中にエラーが発生しました。".to_string()],
+                    )),
+                }
+            }
+            Err(error_messages) => Err(MountainFindException::new(
+                ErrorCode::InvalidQueryParam,
+                error_messages,
+            )),
+        }
+    }
+
+    pub async fn find_box(
+        &self,
+        search_query: MountainBoxSearchQuery,
+    ) -> Result<SearchedBoxMountainResult, MountainFindException> {
+        match MountainBoxSearchCondition::try_from(search_query) {
+            Ok(condition) => {
+                match self
+                    .repositories
+                    .mountain_repository()
+                    .find_box(condition)
+                    .await
+                {
+                    Ok(mountains) => {
+                        let searched_mountains: Vec<SearchedMountain> =
+                            mountains.into_iter().map(|m| m.into()).collect();
+                        let total = searched_mountains.len() as u64;
+
+                        Ok(SearchedBoxMountainResult {
+                            mountains: searched_mountains,
+                            total,
                         })
                     }
                     Err(_) => Err(MountainFindException::new(

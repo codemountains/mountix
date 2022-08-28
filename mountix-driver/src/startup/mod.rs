@@ -1,7 +1,7 @@
 use crate::module::Modules;
 use crate::routes::health::{hc, hc_mongodb};
 use crate::routes::information::info;
-use crate::routes::mountain::{find_mountains, get_mountain};
+use crate::routes::mountain::{find_mountains, find_mountains_by_box, get_mountain};
 use crate::routes::surrounding_mountain::find_surroundings;
 use axum::http::Method;
 use axum::{routing::get, Extension, Router};
@@ -23,7 +23,8 @@ pub async fn startup(modules: Arc<Modules>) {
     let mountain_router = Router::new()
         .route("/", get(find_mountains))
         .route("/:id", get(get_mountain))
-        .route("/:id/surroundings", get(find_surroundings));
+        .route("/:id/surroundings", get(find_surroundings))
+        .route("/geosearch", get(find_mountains_by_box));
 
     let info_router = Router::new().route("/", get(info));
 
