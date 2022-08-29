@@ -1,4 +1,7 @@
-# mountix
+<div style="text-align: center;">
+  <img src="assets/mountix-logo.png" alt="mountix api"/>
+  <p>日本の山岳一覧・百名山 API</p>
+</div>
 
 ## Getting Started
 
