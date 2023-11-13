@@ -1,0 +1,475 @@
+{
+	"info": {
+		"_postman_id": "571b5df0-e0a3-438a-a6ef-2d6853bc6afa",
+		"name": "mountix API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "12620042"
+	},
+	"item": [
+		{
+			"name": "mountains",
+			"item": [
+				{
+					"name": "{mountainId}",
+					"item": [
+						{
+							"name": "surroundings",
+							"item": [
+								{
+									"name": "Search surrounding mountains",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"exec": [
+													"pm.test(\"response is ok\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});"
+												],
+												"type": "text/javascript"
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/mountains/:mountainId/surroundings?distance=5000",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"mountains",
+												":mountainId",
+												"surroundings"
+											],
+											"query": [
+												{
+													"key": "distance",
+													"value": "5000",
+													"description": "中心点となる山岳からの最大距離（m）"
+												}
+											],
+											"variable": [
+												{
+													"key": "mountainId",
+													"value": "533"
+												}
+											]
+										},
+										"description": "周辺に存在する山岳の[日本の主な山岳一覧](https://www.gsi.go.jp/kihonjohochousa/kihonjohochousa41140.html)に掲載されている山岳情報を一覧を取得します\n"
+									},
+									"response": [
+										{
+											"name": "周辺の日本の主な山岳一覧取得結果",
+											"originalRequest": {
+												"method": "GET",
+												"header": [
+													{
+														"key": "Accept",
+														"value": "application/json"
+													}
+												],
+												"url": {
+													"raw": "{{baseUrl}}/mountains/:mountainId/surroundings?distance=5000",
+													"host": [
+														"{{baseUrl}}"
+													],
+													"path": [
+														"mountains",
+														":mountainId",
+														"surroundings"
+													],
+													"query": [
+														{
+															"key": "distance",
+															"value": "5000",
+															"description": "中心点となる山岳からの最大距離（m）"
+														}
+													],
+													"variable": [
+														{
+															"key": "mountainId"
+														}
+													]
+												}
+											},
+											"status": "OK",
+											"code": 200,
+											"_postman_previewlanguage": "json",
+											"header": [
+												{
+													"key": "Content-Type",
+													"value": "application/json"
+												}
+											],
+											"cookie": [],
+											"body": "{\n  \"mountains\": [\n    {\n      \"id\": \"<integer>\",\n      \"name\": \"<string>\",\n      \"nameKana\": \"<string>\",\n      \"area\": \"<string>\",\n      \"prefectures\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"elevation\": \"<integer>\",\n      \"location\": {\n        \"latitude\": \"<number>\",\n        \"longitude\": \"<number>\",\n        \"gsiUrl\": \"<string>\"\n      },\n      \"tags\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    },\n    {\n      \"id\": \"<integer>\",\n      \"name\": \"<string>\",\n      \"nameKana\": \"<string>\",\n      \"area\": \"<string>\",\n      \"prefectures\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"elevation\": \"<integer>\",\n      \"location\": {\n        \"latitude\": \"<number>\",\n        \"longitude\": \"<number>\",\n        \"gsiUrl\": \"<string>\"\n      },\n      \"tags\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    }\n  ],\n  \"distance\": \"<integer>\"\n}"
+										}
+									]
+								}
+							]
+						},
+						{
+							"name": "Get mountain by ID",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"response is ok\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/mountains/:mountainId",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"mountains",
+										":mountainId"
+									],
+									"variable": [
+										{
+											"key": "mountainId",
+											"value": "1000",
+											"description": "(Required) 山岳ID"
+										}
+									]
+								},
+								"description": "[日本の主な山岳一覧](https://www.gsi.go.jp/kihonjohochousa/kihonjohochousa41140.html)に掲載されている山岳情報を取得します\n"
+							},
+							"response": [
+								{
+									"name": "日本の主な山岳の取得結果",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/mountains/:mountainId",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"mountains",
+												":mountainId"
+											],
+											"variable": [
+												{
+													"key": "mountainId"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"id\": \"<integer>\",\n  \"name\": \"<string>\",\n  \"nameKana\": \"<string>\",\n  \"area\": \"<string>\",\n  \"prefectures\": [\n    \"<string>\",\n    \"<string>\"\n  ],\n  \"elevation\": \"<integer>\",\n  \"location\": {\n    \"latitude\": \"<number>\",\n    \"longitude\": \"<number>\",\n    \"gsiUrl\": \"<string>\"\n  },\n  \"tags\": [\n    \"<string>\",\n    \"<string>\"\n  ]\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "geosearch",
+					"item": [
+						{
+							"name": "Geosearch mountains",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"exec": [
+											"pm.test(\"response is ok\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});"
+										],
+										"type": "text/javascript"
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/mountains/geosearch?box=(137.632582,36.600727),(137.601829,36.631957)",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"mountains",
+										"geosearch"
+									],
+									"query": [
+										{
+											"key": "box",
+											"value": "(137.632582,36.600727),(137.601829,36.631957)",
+											"description": "(Required) 長方形を示す地理空間 - (左下隅の経度,左下隅の緯度),(右上隅の経度,右上隅の緯度)で指定する"
+										},
+										{
+											"key": "name",
+											"value": "<string>",
+											"description": "山岳名 or 山岳名（かな） - 部分一致検索が可能",
+											"disabled": true
+										},
+										{
+											"key": "sort",
+											"value": "id.asc",
+											"description": "ソート - ID(id)、標高(elevation)、山岳名(name)の昇順・降順で山岳一覧の並べ替えが可能",
+											"disabled": true
+										},
+										{
+											"key": "tag",
+											"value": "<integer>",
+											"description": "タグID - 百名山(tag=1)、二百名山(tag=2)が指定でき、それに該当する山の検索が可能",
+											"disabled": true
+										}
+									]
+								},
+								"description": "指定した長方形の地理空間に存在する山岳の[日本の主な山岳一覧](https://www.gsi.go.jp/kihonjohochousa/kihonjohochousa41140.html)に掲載されている山岳情報を一覧で取得します\n"
+							},
+							"response": [
+								{
+									"name": "日本の主な山岳一覧取得結果",
+									"originalRequest": {
+										"method": "GET",
+										"header": [
+											{
+												"key": "Accept",
+												"value": "application/json"
+											}
+										],
+										"url": {
+											"raw": "{{baseUrl}}/mountains/geosearch?box=<string>&name=<string>&sort=id.asc&tag=<integer>",
+											"host": [
+												"{{baseUrl}}"
+											],
+											"path": [
+												"mountains",
+												"geosearch"
+											],
+											"query": [
+												{
+													"key": "box",
+													"value": "<string>",
+													"description": "(Required) 長方形を示す地理空間 - (左下隅の経度,左下隅の緯度),(右上隅の経度,右上隅の緯度)で指定する"
+												},
+												{
+													"key": "name",
+													"value": "<string>",
+													"description": "山岳名 or 山岳名（かな） - 部分一致検索が可能"
+												},
+												{
+													"key": "sort",
+													"value": "id.asc",
+													"description": "ソート - ID(id)、標高(elevation)、山岳名(name)の昇順・降順で山岳一覧の並べ替えが可能"
+												},
+												{
+													"key": "tag",
+													"value": "<integer>",
+													"description": "タグID - 百名山(tag=1)、二百名山(tag=2)が指定でき、それに該当する山の検索が可能"
+												}
+											]
+										}
+									},
+									"status": "OK",
+									"code": 200,
+									"_postman_previewlanguage": "json",
+									"header": [
+										{
+											"key": "Content-Type",
+											"value": "application/json"
+										}
+									],
+									"cookie": [],
+									"body": "{\n  \"mountains\": [\n    {\n      \"id\": \"<integer>\",\n      \"name\": \"<string>\",\n      \"nameKana\": \"<string>\",\n      \"area\": \"<string>\",\n      \"prefectures\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"elevation\": \"<integer>\",\n      \"location\": {\n        \"latitude\": \"<number>\",\n        \"longitude\": \"<number>\",\n        \"gsiUrl\": \"<string>\"\n      },\n      \"tags\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    },\n    {\n      \"id\": \"<integer>\",\n      \"name\": \"<string>\",\n      \"nameKana\": \"<string>\",\n      \"area\": \"<string>\",\n      \"prefectures\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"elevation\": \"<integer>\",\n      \"location\": {\n        \"latitude\": \"<number>\",\n        \"longitude\": \"<number>\",\n        \"gsiUrl\": \"<string>\"\n      },\n      \"tags\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    }\n  ],\n  \"total\": \"<integer>\"\n}"
+								}
+							]
+						}
+					]
+				},
+				{
+					"name": "Search mountains",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"response is ok\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Accept",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "{{baseUrl}}/mountains",
+							"host": [
+								"{{baseUrl}}"
+							],
+							"path": [
+								"mountains"
+							],
+							"query": [
+								{
+									"key": "prefecture",
+									"value": "<integer>",
+									"description": "都道府県ID - 都道府県による検索が可能・[都道府県ID一覧はこちら](./prefectures/)\n",
+									"disabled": true
+								},
+								{
+									"key": "name",
+									"value": "<string>",
+									"description": "山岳名 or 山岳名（かな） - 部分一致検索が可能",
+									"disabled": true
+								},
+								{
+									"key": "tag",
+									"value": "<integer>",
+									"description": "タグID - 百名山(tag=1)、二百名山(tag=2)が指定でき、それに該当する山の検索が可能",
+									"disabled": true
+								},
+								{
+									"key": "offset",
+									"value": "0",
+									"description": "オフセット - 指定した数だけ抽出するレコードをスキップすることが可能",
+									"disabled": true
+								},
+								{
+									"key": "limit",
+									"value": "<integer>",
+									"description": "リミット - 指定した数のレコード抽出が可能",
+									"disabled": true
+								},
+								{
+									"key": "sort",
+									"value": "id.asc",
+									"description": "ソート - ID(id)、標高(elevation)、山岳名(name)の昇順・降順で山岳一覧の並べ替えが可能",
+									"disabled": true
+								}
+							]
+						},
+						"description": "[日本の主な山岳一覧](https://www.gsi.go.jp/kihonjohochousa/kihonjohochousa41140.html)に掲載されている山岳情報を一覧で取得します\n"
+					},
+					"response": [
+						{
+							"name": "日本の主な山岳一覧取得結果",
+							"originalRequest": {
+								"method": "GET",
+								"header": [
+									{
+										"key": "Accept",
+										"value": "application/json"
+									}
+								],
+								"url": {
+									"raw": "{{baseUrl}}/mountains?prefecture=<integer>&name=<string>&tag=<integer>&offset=0&limit=<integer>&sort=id.asc",
+									"host": [
+										"{{baseUrl}}"
+									],
+									"path": [
+										"mountains"
+									],
+									"query": [
+										{
+											"key": "prefecture",
+											"value": "<integer>",
+											"description": "都道府県ID - 都道府県による検索が可能・[都道府県ID一覧はこちら](./prefectures/)\n"
+										},
+										{
+											"key": "name",
+											"value": "<string>",
+											"description": "山岳名 or 山岳名（かな） - 部分一致検索が可能"
+										},
+										{
+											"key": "tag",
+											"value": "<integer>",
+											"description": "タグID - 百名山(tag=1)、二百名山(tag=2)が指定でき、それに該当する山の検索が可能"
+										},
+										{
+											"key": "offset",
+											"value": "0",
+											"description": "オフセット - 指定した数だけ抽出するレコードをスキップすることが可能"
+										},
+										{
+											"key": "limit",
+											"value": "<integer>",
+											"description": "リミット - 指定した数のレコード抽出が可能"
+										},
+										{
+											"key": "sort",
+											"value": "id.asc",
+											"description": "ソート - ID(id)、標高(elevation)、山岳名(name)の昇順・降順で山岳一覧の並べ替えが可能"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								}
+							],
+							"cookie": [],
+							"body": "{\n  \"mountains\": [\n    {\n      \"id\": \"<integer>\",\n      \"name\": \"<string>\",\n      \"nameKana\": \"<string>\",\n      \"area\": \"<string>\",\n      \"prefectures\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"elevation\": \"<integer>\",\n      \"location\": {\n        \"latitude\": \"<number>\",\n        \"longitude\": \"<number>\",\n        \"gsiUrl\": \"<string>\"\n      },\n      \"tags\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    },\n    {\n      \"id\": \"<integer>\",\n      \"name\": \"<string>\",\n      \"nameKana\": \"<string>\",\n      \"area\": \"<string>\",\n      \"prefectures\": [\n        \"<string>\",\n        \"<string>\"\n      ],\n      \"elevation\": \"<integer>\",\n      \"location\": {\n        \"latitude\": \"<number>\",\n        \"longitude\": \"<number>\",\n        \"gsiUrl\": \"<string>\"\n      },\n      \"tags\": [\n        \"<string>\",\n        \"<string>\"\n      ]\n    }\n  ],\n  \"total\": \"<integer>\",\n  \"offset\": \"<integer>\",\n  \"limit\": \"<integer>\"\n}"
+						}
+					]
+				}
+			]
+		}
+	],
+	"variable": [
+		{
+			"key": "baseUrl",
+			"value": "http://localhost:8080/api/v1"
+		}
+	]
+}

@@ -1,0 +1,37 @@
+name: integration test
+on:
+    push:
+    workflow_dispatch:
+env:
+    RUST_LOG: ${{ vars.RUST_LOG }}
+    HOST: ${{ vars.HOST }}
+    PORT: ${{ vars.PORT }}
+    DATABASE_URL: ${{ secrets.DATABASE_URL }}
+    MOUNTAINS_URL: ${{ vars.MOUNTAINS_URL }}
+    DOCUMENTS_URL: ${{ vars.DOCUMENTS_URL }}
+    DEFAULT_DISTANCE=: ${{ vars.DEFAULT_DISTANCE }}
+    MAX_DISTANCE: ${{ vars.MAX_DISTANCE }}
+jobs:
+    test:
+        name: Tests
+        runs-on: ubuntu-latest
+        steps:
+            -   name: Checkout sources
+                uses: actions/checkout@v3
+
+            -   name: Install stable toolchain
+                uses: dtolnay/rust-toolchain@stable
+
+            -   name: Install Postman CLI
+                run: |
+                    curl -o- "https://dl-cli.pstmn.io/install/linux64.sh" | sh
+
+            -   name: Login to Postman CLI
+                run: postman login --with-api-key ${{ secrets.POSTMAN_API_KEY }}
+
+            -   name: Cargo run
+                run: cargo run & sleep 180
+
+            -   name: Run API tests
+                run: |
+                    postman collection run "12620042-571b5df0-e0a3-438a-a6ef-2d6853bc6afa" -e "12620042-07831d65-8aaa-4584-8a15-51c9ca872aee"
