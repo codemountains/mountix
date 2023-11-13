@@ -8,7 +8,7 @@
 
 ## Running a collection locally
 
-ルートディレクトリで `postman collection run ` を実行します。
+ルートディレクトリで `postman collection run` を実行します。
 
 ```shell
 postman collection run ./postman/mountix.postman_collection.json
