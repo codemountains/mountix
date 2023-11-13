@@ -5,7 +5,7 @@ on:
 env:
     RUST_LOG: ${{ vars.RUST_LOG }}
     HOST: ${{ vars.HOST }}
-    POST: ${{ vars.PORT }}
+    PORT: ${{ vars.PORT }}
     DATABASE_URL: ${{ secrets.DATABASE_URL }}
     MOUNTAINS_URL: ${{ vars.MOUNTAINS_URL }}
     DOCUMENTS_URL: ${{ vars.DOCUMENTS_URL }}
