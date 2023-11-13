@@ -30,7 +30,7 @@ jobs:
                 run: postman login --with-api-key ${{ secrets.POSTMAN_API_KEY }}
 
             -   name: Cargo run
-                run: cargo run
+                run: cargo run & sleep 180
 
             -   name: Run API tests
                 run: |
