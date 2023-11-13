@@ -2,6 +2,15 @@ name: integration test
 on:
     push:
     workflow_dispatch:
+env:
+    RUST_LOG: ${{ env.RUST_LOG }}
+    HOST: ${{ env.HOST }}
+    POST: ${{ env.PORT }}
+    DATABASE_URL: ${{ secrets.DATABASE_URL }}
+    MOUNTAINS_URL: ${{ env.MOUNTAINS_URL }}
+    DOCUMENTS_URL: ${{ env.DOCUMENTS_URL }}
+    DEFAULT_DISTANCE=: ${{ env.DEFAULT_DISTANCE }}
+    MAX_DISTANCE: ${{ env.MAX_DISTANCE }}
 jobs:
     test:
         name: Tests
