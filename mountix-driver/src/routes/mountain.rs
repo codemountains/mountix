@@ -1,5 +1,5 @@
 use crate::model::mountain::{
-    JsonBoxMountainsResponse, JsonMountain, JsonMountainsResponse, MountainBoxQuery, MountainError,
+    JsonBoxMountainsResponse, JsonMountain, JsonMountainsResponse, MountainBoxSearchQueryParam, MountainError,
     MountainSearchQueryParam,
 };
 use crate::model::JsonErrorResponse;
@@ -72,7 +72,7 @@ pub async fn find_mountains(
 }
 
 pub async fn find_mountains_by_box(
-    Query(query): Query<MountainBoxQuery>,
+    Query(query): Query<MountainBoxSearchQueryParam>,
     Extension(modules): Extension<Arc<Modules>>,
 ) -> Result<impl IntoResponse, impl IntoResponse> {
     match query.try_into() {

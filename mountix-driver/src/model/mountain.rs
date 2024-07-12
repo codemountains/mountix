@@ -153,20 +153,20 @@ impl From<SearchedBoxMountainResult> for JsonBoxMountainsResponse {
 ///
 /// 山岳情報の範囲検索クエリパラメータ
 #[derive(Debug, Deserialize)]
-pub struct MountainBoxQuery {
+pub struct MountainBoxSearchQueryParam {
     r#box: Option<String>,
     name: Option<String>,
     tag: Option<String>,
     sort: Option<String>,
 }
 
-impl TryFrom<MountainBoxQuery> for MountainBoxSearchQuery {
+impl TryFrom<MountainBoxSearchQueryParam> for MountainBoxSearchQuery {
     type Error = Vec<String>;
 
     /// Converts to `MountainBoxSearchQuery` from `MountainBoxQuery`
     ///
     /// 山岳情報の範囲検索クエリパラメータから山岳情報の範囲検索クエリオブジェクトに変換します
-    fn try_from(bq: MountainBoxQuery) -> Result<Self, Self::Error> {
+    fn try_from(bq: MountainBoxSearchQueryParam) -> Result<Self, Self::Error> {
         match bq.r#box {
             Some(box_param) => Ok(MountainBoxSearchQuery {
                 box_coordinates: box_param,
