@@ -32,6 +32,9 @@ impl Default for JsonInformationResponse {
     }
 }
 
+/// API endpoint struct
+///
+/// API エンドポイント情報
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct JsonEndpoint {
@@ -40,6 +43,9 @@ pub struct JsonEndpoint {
 }
 
 impl JsonEndpoint {
+    /// Returns API endpoint struct
+    ///
+    /// API エンドポイント情報を生成します
     fn new(resource: String, url: String) -> Self {
         Self { resource, url }
     }
