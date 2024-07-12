@@ -1,5 +1,5 @@
 use crate::model::surrounding_mountain::{
-    JsonSurroundingMountainResponse, SurroundingMountainQuery,
+    JsonSurroundingMountainResponse, SurroundingMountainSearchQueryParam,
 };
 use crate::model::JsonErrorResponse;
 use crate::module::{Modules, ModulesExt};
@@ -14,7 +14,7 @@ use tracing::log::error;
 
 pub async fn find_surroundings(
     Path(mountain_id): Path<String>,
-    Query(query): Query<SurroundingMountainQuery>,
+    Query(query): Query<SurroundingMountainSearchQueryParam>,
     Extension(modules): Extension<Arc<Modules>>,
 ) -> Result<impl IntoResponse, impl IntoResponse> {
     let search_query: SurroundingMountainSearchQuery = query.into();

@@ -73,12 +73,12 @@ impl From<SearchedSurroundingMountainResult> for JsonSurroundingMountainResponse
 }
 
 #[derive(Debug, Deserialize)]
-pub struct SurroundingMountainQuery {
+pub struct SurroundingMountainSearchQueryParam {
     distance: Option<String>,
 }
 
-impl From<SurroundingMountainQuery> for SurroundingMountainSearchQuery {
-    fn from(query: SurroundingMountainQuery) -> Self {
+impl From<SurroundingMountainSearchQueryParam> for SurroundingMountainSearchQuery {
+    fn from(query: SurroundingMountainSearchQueryParam) -> Self {
         SurroundingMountainSearchQuery {
             distance: query.distance,
         }
