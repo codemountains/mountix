@@ -96,7 +96,7 @@ impl From<SearchedMountainResult> for JsonMountainsResponse {
 ///
 /// 山岳情報検索クエリパラメータ
 #[derive(Debug, Deserialize)]
-pub struct MountainQuery {
+pub struct MountainSearchQueryParam {
     name: Option<String>,
     prefecture: Option<String>,
     tag: Option<String>,
@@ -105,11 +105,11 @@ pub struct MountainQuery {
     sort: Option<String>,
 }
 
-impl From<MountainQuery> for MountainSearchQuery {
-    /// Converts to `MountainSearchQuery` from `MountainQuery`
+impl From<MountainSearchQueryParam> for MountainSearchQuery {
+    /// Converts to `MountainSearchQuery` from `MountainSearchQueryParam`
     ///
     /// 山岳情報検索クエリパラメータから山岳情報検索クエリオブジェクトに変換します
-    fn from(mq: MountainQuery) -> Self {
+    fn from(mq: MountainSearchQueryParam) -> Self {
         MountainSearchQuery {
             name: mq.name,
             prefecture: mq.prefecture,
