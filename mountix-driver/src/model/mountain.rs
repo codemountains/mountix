@@ -164,7 +164,7 @@ impl IntoResponse for MountainError {
             }
             MountainError::ServerError => {
                 let json = JsonErrorResponse::new(vec![
-                    "山岳情報を取得中に予期せぬエラーが発生しました。".to_string()
+                    "山岳情報を取得中に予期せぬエラーが発生しました。".to_string(),
                 ]);
                 (StatusCode::INTERNAL_SERVER_ERROR, Json(json)).into_response()
             }
