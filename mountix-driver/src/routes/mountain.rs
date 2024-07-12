@@ -1,6 +1,6 @@
 use crate::model::mountain::{
-    JsonBoxMountainsResponse, JsonMountain, JsonMountainsResponse, MountainBoxQuery, MountainError,
-    MountainQuery,
+    JsonBoxMountainsResponse, JsonMountain, JsonMountainsResponse, MountainBoxSearchQueryParam, MountainError,
+    MountainSearchQueryParam,
 };
 use crate::model::JsonErrorResponse;
 use crate::module::{Modules, ModulesExt};
@@ -45,7 +45,7 @@ pub async fn get_mountain(
 }
 
 pub async fn find_mountains(
-    Query(query): Query<MountainQuery>,
+    Query(query): Query<MountainSearchQueryParam>,
     Extension(modules): Extension<Arc<Modules>>,
 ) -> Result<impl IntoResponse, impl IntoResponse> {
     let search_query: MountainSearchQuery = query.into();
@@ -72,7 +72,7 @@ pub async fn find_mountains(
 }
 
 pub async fn find_mountains_by_box(
-    Query(query): Query<MountainBoxQuery>,
+    Query(query): Query<MountainBoxSearchQueryParam>,
     Extension(modules): Extension<Arc<Modules>>,
 ) -> Result<impl IntoResponse, impl IntoResponse> {
     match query.try_into() {

@@ -3,6 +3,9 @@ use crate::model::{ErrorCode, Id};
 use std::env;
 use std::ffi::OsString;
 
+const ERR_MESSAGE_SURROUNDING_FIND_EXCEPTION: &str =
+    "周辺の山岳情報を検索中にエラーが発生しました。";
+
 #[derive(Debug)]
 pub struct SurroundingMountain {
     pub id: Id<SurroundingMountain>,
@@ -97,6 +100,21 @@ pub struct SurroundingMountainFindException {
 
 impl SurroundingMountainFindException {
     pub fn new(error_code: ErrorCode, messages: Vec<String>) -> Self {
+        Self {
+            error_code,
+            messages,
+        }
+    }
+
+    /// Returns an error including exception error messages
+    ///
+    /// 周辺の山岳を検索時の例外エラーメッセージを含むエラーを生成します
+    ///
+    /// # Arguments
+    ///
+    /// - `error_code`: Error code
+    pub fn new_with_error_code(error_code: ErrorCode) -> Self {
+        let messages = vec![ERR_MESSAGE_SURROUNDING_FIND_EXCEPTION.to_string()];
         Self {
             error_code,
             messages,

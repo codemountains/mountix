@@ -1,6 +1,8 @@
 use crate::model::{ErrorCode, Id};
 use regex::Regex;
 
+const ERR_MESSAGE_FIND_EXCEPTION: &str = "山岳情報を検索中にエラーが発生しました。";
+
 #[derive(Debug)]
 pub struct Mountain {
     pub id: Id<Mountain>,
@@ -343,6 +345,21 @@ pub struct MountainFindException {
 
 impl MountainFindException {
     pub fn new(error_code: ErrorCode, messages: Vec<String>) -> Self {
+        Self {
+            error_code,
+            messages,
+        }
+    }
+
+    /// Returns an error including exception error messages
+    ///
+    /// 検索時の例外エラーメッセージを含むエラーを生成します
+    ///
+    /// # Arguments
+    ///
+    /// - `error_code`: Error code
+    pub fn new_with_error_code(error_code: ErrorCode) -> Self {
+        let messages = vec![ERR_MESSAGE_FIND_EXCEPTION.to_string()];
         Self {
             error_code,
             messages,

@@ -53,10 +53,11 @@ impl<R: RepositoriesModuleExt> SurroundingMountainUseCase<R> {
                                             distance,
                                         })
                                     }
-                                    Err(_) => Err(SurroundingMountainFindException::new(
-                                        ErrorCode::ServerError,
-                                        vec!["山岳情報を検索中にエラーが発生しました。".to_string()],
-                                    )),
+                                    Err(_) => {
+                                        Err(SurroundingMountainFindException::new_with_error_code(
+                                            ErrorCode::ServerError,
+                                        ))
+                                    }
                                 }
                             }
                             Err(error_messages) => Err(SurroundingMountainFindException::new(
@@ -65,19 +66,16 @@ impl<R: RepositoriesModuleExt> SurroundingMountainUseCase<R> {
                             )),
                         }
                     }
-                    None => Err(SurroundingMountainFindException::new(
+                    None => Err(SurroundingMountainFindException::new_with_error_code(
                         ErrorCode::ServerError,
-                        vec!["山岳情報を検索中にエラーが発生しました。".to_string()],
                     )),
                 },
-                Err(_) => Err(SurroundingMountainFindException::new(
+                Err(_) => Err(SurroundingMountainFindException::new_with_error_code(
                     ErrorCode::ServerError,
-                    vec!["山岳情報を検索中にエラーが発生しました。".to_string()],
                 )),
             },
-            Err(_) => Err(SurroundingMountainFindException::new(
+            Err(_) => Err(SurroundingMountainFindException::new_with_error_code(
                 ErrorCode::ServerError,
-                vec!["山岳情報を検索中にエラーが発生しました。".to_string()],
             )),
         }
     }

@@ -8,6 +8,9 @@ use mountix_app::model::mountain::{
 };
 use serde::{Deserialize, Serialize};
 
+/// Mountain json object
+///
+/// 山岳情報
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct JsonMountain {
@@ -21,6 +24,9 @@ pub struct JsonMountain {
     pub tags: Vec<String>,
 }
 
+/// Mountain location json object
+///
+/// 山岳位置情報
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct JsonMountainLocation {
@@ -54,6 +60,9 @@ impl From<SearchedMountainLocation> for JsonMountainLocation {
     }
 }
 
+/// Mountain response
+///
+/// 山岳情報レスポンス
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct JsonMountainsResponse {
@@ -64,6 +73,9 @@ pub struct JsonMountainsResponse {
 }
 
 impl From<SearchedMountainResult> for JsonMountainsResponse {
+    /// Converts to `JsonMountainResponse` from `SearchedMountainResult`
+    ///
+    /// 山岳情報検索結果から山岳情報レスポンスに変換します
     fn from(result: SearchedMountainResult) -> Self {
         let mountains = result
             .mountains
@@ -80,8 +92,11 @@ impl From<SearchedMountainResult> for JsonMountainsResponse {
     }
 }
 
+/// Mountain search query object
+///
+/// 山岳情報検索クエリパラメータ
 #[derive(Debug, Deserialize)]
-pub struct MountainQuery {
+pub struct MountainSearchQueryParam {
     name: Option<String>,
     prefecture: Option<String>,
     tag: Option<String>,
@@ -90,8 +105,11 @@ pub struct MountainQuery {
     sort: Option<String>,
 }
 
-impl From<MountainQuery> for MountainSearchQuery {
-    fn from(mq: MountainQuery) -> Self {
+impl From<MountainSearchQueryParam> for MountainSearchQuery {
+    /// Converts to `MountainSearchQuery` from `MountainSearchQueryParam`
+    ///
+    /// 山岳情報検索クエリパラメータから山岳情報検索クエリオブジェクトに変換します
+    fn from(mq: MountainSearchQueryParam) -> Self {
         MountainSearchQuery {
             name: mq.name,
             prefecture: mq.prefecture,
@@ -103,6 +121,9 @@ impl From<MountainQuery> for MountainSearchQuery {
     }
 }
 
+/// Box mountains response
+///
+/// 山岳情報範囲検索レスポンス
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct JsonBoxMountainsResponse {
@@ -111,6 +132,9 @@ pub struct JsonBoxMountainsResponse {
 }
 
 impl From<SearchedBoxMountainResult> for JsonBoxMountainsResponse {
+    /// Converts to `JsonBoxMountainsResponse` from `SearchedBoxMountainResult`
+    ///
+    /// 山岳情報の範囲検索結果から山岳情報範囲検索レスポンスに変換します
     fn from(result: SearchedBoxMountainResult) -> Self {
         let mountains = result
             .mountains
@@ -125,18 +149,24 @@ impl From<SearchedBoxMountainResult> for JsonBoxMountainsResponse {
     }
 }
 
+/// Box mountains search query object
+///
+/// 山岳情報の範囲検索クエリパラメータ
 #[derive(Debug, Deserialize)]
-pub struct MountainBoxQuery {
+pub struct MountainBoxSearchQueryParam {
     r#box: Option<String>,
     name: Option<String>,
     tag: Option<String>,
     sort: Option<String>,
 }
 
-impl TryFrom<MountainBoxQuery> for MountainBoxSearchQuery {
+impl TryFrom<MountainBoxSearchQueryParam> for MountainBoxSearchQuery {
     type Error = Vec<String>;
 
-    fn try_from(bq: MountainBoxQuery) -> Result<Self, Self::Error> {
+    /// Converts to `MountainBoxSearchQuery` from `MountainBoxSearchQueryParam`
+    ///
+    /// 山岳情報の範囲検索クエリパラメータから山岳情報の範囲検索クエリオブジェクトに変換します
+    fn try_from(bq: MountainBoxSearchQueryParam) -> Result<Self, Self::Error> {
         match bq.r#box {
             Some(box_param) => Ok(MountainBoxSearchQuery {
                 box_coordinates: box_param,
@@ -149,12 +179,18 @@ impl TryFrom<MountainBoxQuery> for MountainBoxSearchQuery {
     }
 }
 
+/// Mountain search error
+///
+/// 山岳情報検索エラー
 pub enum MountainError {
     NotFound,
     ServerError,
 }
 
 impl IntoResponse for MountainError {
+    /// Create error response
+    ///
+    /// 山岳情報検索エラー時のレスポンスを生成します
     fn into_response(self) -> Response {
         match self {
             MountainError::NotFound => {
@@ -164,7 +200,7 @@ impl IntoResponse for MountainError {
             }
             MountainError::ServerError => {
                 let json = JsonErrorResponse::new(vec![
-                    "山岳情報を検索中にエラーが発生しました。".to_string()
+                    "山岳情報を取得中に予期せぬエラーが発生しました。".to_string(),
                 ]);
                 (StatusCode::INTERNAL_SERVER_ERROR, Json(json)).into_response()
             }

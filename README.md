@@ -31,6 +31,27 @@ Note:
 
 ### Run the web application
 
+Create `.env`.
+
+```text:.env
+RUST_LOG=debug
+HOST=127.0.0.1
+PORT=8080
+
+# More infomation here https://www.mongodb.com/docs/manual/reference/connection-string/
+# defaultauthdb is `mountix_db`
+DATABASE_URL={mongodb connection url}
+DATABESE_NAME=mountix_db
+MOUNTAINS_URL=http://127.0.0.1:8080/api/v1/mountains
+
+# See https://github.com/codemountains/mountix-docs
+DOCUMENTS_URL=http://127.0.0.1:3000
+DEFAULT_DISTANCE=5000
+MAX_DISTANCE=100000
+```
+
+Execute `cargo run` command.
+
 ```shell
 cargo run
 ```
