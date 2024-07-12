@@ -8,6 +8,9 @@ use mountix_app::model::mountain::{
 };
 use serde::{Deserialize, Serialize};
 
+/// Mountain json object
+///
+/// 山岳情報
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct JsonMountain {
@@ -21,6 +24,9 @@ pub struct JsonMountain {
     pub tags: Vec<String>,
 }
 
+/// Mountain location json object
+///
+/// 山岳位置情報
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct JsonMountainLocation {
@@ -54,6 +60,9 @@ impl From<SearchedMountainLocation> for JsonMountainLocation {
     }
 }
 
+/// Mountain response
+///
+/// 山岳情報レスポンス
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct JsonMountainsResponse {
@@ -64,6 +73,9 @@ pub struct JsonMountainsResponse {
 }
 
 impl From<SearchedMountainResult> for JsonMountainsResponse {
+    /// Converts to `JsonMountainResponse` from `SearchedMountainResult`
+    ///
+    /// 山岳情報検索結果から山岳情報レスポンスに変換します
     fn from(result: SearchedMountainResult) -> Self {
         let mountains = result
             .mountains
@@ -80,6 +92,9 @@ impl From<SearchedMountainResult> for JsonMountainsResponse {
     }
 }
 
+/// Mountain search query object
+///
+/// 山岳情報検索クエリパラメータ
 #[derive(Debug, Deserialize)]
 pub struct MountainQuery {
     name: Option<String>,
@@ -91,6 +106,9 @@ pub struct MountainQuery {
 }
 
 impl From<MountainQuery> for MountainSearchQuery {
+    /// Converts to `MountainSearchQuery` from `MountainQuery`
+    ///
+    /// 山岳情報検索クエリパラメータから山岳情報検索クエリオブジェクトに変換します
     fn from(mq: MountainQuery) -> Self {
         MountainSearchQuery {
             name: mq.name,
@@ -103,6 +121,9 @@ impl From<MountainQuery> for MountainSearchQuery {
     }
 }
 
+/// Box mountains response
+///
+/// 山岳情報範囲検索レスポンス
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct JsonBoxMountainsResponse {
@@ -111,6 +132,9 @@ pub struct JsonBoxMountainsResponse {
 }
 
 impl From<SearchedBoxMountainResult> for JsonBoxMountainsResponse {
+    /// Converts to `JsonBoxMountainsResponse` from `SearchedBoxMountainResult`
+    ///
+    /// 山岳情報の範囲検索結果から山岳情報範囲検索レスポンスに変換します
     fn from(result: SearchedBoxMountainResult) -> Self {
         let mountains = result
             .mountains
@@ -125,6 +149,9 @@ impl From<SearchedBoxMountainResult> for JsonBoxMountainsResponse {
     }
 }
 
+/// Box mountains search query object
+///
+/// 山岳情報の範囲検索クエリパラメータ
 #[derive(Debug, Deserialize)]
 pub struct MountainBoxQuery {
     r#box: Option<String>,
@@ -136,6 +163,9 @@ pub struct MountainBoxQuery {
 impl TryFrom<MountainBoxQuery> for MountainBoxSearchQuery {
     type Error = Vec<String>;
 
+    /// Converts to `MountainBoxSearchQuery` from `MountainBoxQuery`
+    ///
+    /// 山岳情報の範囲検索クエリパラメータから山岳情報の範囲検索クエリオブジェクトに変換します
     fn try_from(bq: MountainBoxQuery) -> Result<Self, Self::Error> {
         match bq.r#box {
             Some(box_param) => Ok(MountainBoxSearchQuery {
@@ -149,12 +179,18 @@ impl TryFrom<MountainBoxQuery> for MountainBoxSearchQuery {
     }
 }
 
+/// Mountain search error
+///
+/// 山岳情報検索エラー
 pub enum MountainError {
     NotFound,
     ServerError,
 }
 
 impl IntoResponse for MountainError {
+    /// Create error response
+    ///
+    /// 山岳情報検索エラー時のレスポンスを生成します
     fn into_response(self) -> Response {
         match self {
             MountainError::NotFound => {
