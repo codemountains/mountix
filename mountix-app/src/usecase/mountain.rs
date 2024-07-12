@@ -77,9 +77,8 @@ impl<R: RepositoriesModuleExt> MountainUseCase<R> {
                             limit,
                         })
                     }
-                    Err(_) => Err(MountainFindException::new(
+                    Err(_) => Err(MountainFindException::new_with_error_code(
                         ErrorCode::ServerError,
-                        vec!["山岳情報を検索中にエラーが発生しました。".to_string()],
                     )),
                 }
             }
@@ -112,9 +111,8 @@ impl<R: RepositoriesModuleExt> MountainUseCase<R> {
                             total,
                         })
                     }
-                    Err(_) => Err(MountainFindException::new(
+                    Err(_) => Err(MountainFindException::new_with_error_code(
                         ErrorCode::ServerError,
-                        vec!["山岳情報を検索中にエラーが発生しました。".to_string()],
                     )),
                 }
             }
