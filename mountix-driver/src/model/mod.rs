@@ -14,7 +14,7 @@ pub struct JsonErrorResponse {
 }
 
 impl JsonErrorResponse {
-    /// Return error response
+    /// Returns error response
     ///
     /// エラー応答レスポンスを生成します
     pub(crate) fn new(messages: Vec<String>) -> Self {
