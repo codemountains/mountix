@@ -163,7 +163,7 @@ pub struct MountainBoxSearchQueryParam {
 impl TryFrom<MountainBoxSearchQueryParam> for MountainBoxSearchQuery {
     type Error = Vec<String>;
 
-    /// Converts to `MountainBoxSearchQuery` from `MountainBoxQuery`
+    /// Converts to `MountainBoxSearchQuery` from `MountainBoxSearchQueryParam`
     ///
     /// 山岳情報の範囲検索クエリパラメータから山岳情報の範囲検索クエリオブジェクトに変換します
     fn try_from(bq: MountainBoxSearchQueryParam) -> Result<Self, Self::Error> {
