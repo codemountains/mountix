@@ -1,6 +1,9 @@
 use serde::Serialize;
 use std::env;
 
+/// API Info response
+///
+/// API 情報応答レスポンス
 #[derive(Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct JsonInformationResponse {
@@ -10,6 +13,9 @@ pub struct JsonInformationResponse {
 }
 
 impl Default for JsonInformationResponse {
+    /// Return API Info response
+    ///
+    /// API 情報応答レスポンスを生成します
     fn default() -> Self {
         let mountains_url = env::var("MOUNTAINS_URL").expect("MOUNTAINS_URL is undefined.");
         let documents_url = env::var("DOCUMENTS_URL").expect("DOCUMENTS_URL is undefined.");
