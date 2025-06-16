@@ -41,7 +41,7 @@ pub async fn startup(modules: Arc<Modules>) {
 
     let listener = TcpListener::bind(addr)
         .await
-        .unwrap_or_else(|_| panic!("Failed to bind to address: {}", addr));
+        .unwrap_or_else(|e| panic!("Failed to bind to address {}: {:?}", addr, e));
 
     axum::serve(listener, app)
         .await
