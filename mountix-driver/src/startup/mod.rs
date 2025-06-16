@@ -39,13 +39,23 @@ pub async fn startup(modules: Arc<Modules>) {
         .layer(Extension(modules))
         .layer(
             TraceLayer::new_for_http().make_span_with(|request: &axum::http::Request<_>| {
-                tracing::info!(
-                    headers = ?request.headers(),
-                    method = ?request.method(),
-                    uri = ?request.uri(),
-                    "Received HTTP request."
-                );
-                tracing::span!(Level::INFO, "http-request")
+                if request.uri().path().starts_with("/api/v1/hc") {
+                    tracing::debug!(
+                        headers = ?request.headers(),
+                        method = ?request.method(),
+                        uri = ?request.uri(),
+                        "Received HTTP request."
+                    );
+                    tracing::span!(Level::DEBUG, "http-request")
+                } else {
+                    tracing::info!(
+                        headers = ?request.headers(),
+                        method = ?request.method(),
+                        uri = ?request.uri(),
+                        "Received Health Check request."
+                    );
+                    tracing::span!(Level::INFO, "http-request")
+                }
             }),
         );
 
