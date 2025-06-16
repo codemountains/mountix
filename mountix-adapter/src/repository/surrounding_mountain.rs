@@ -21,7 +21,7 @@ impl SurroundingMountainRepository for MongoDBRepositoryImpl<SurroundingMountain
             .collection::<SurroundingMountainDocument>("mountains");
 
         let find_command: SurroundingMountainFindCommand = search_condition.try_into()?;
-        let mut mountain_doc_list = collection.find(find_command.filter, None).await?;
+        let mut mountain_doc_list = collection.find(find_command.filter).await?;
 
         let mut mountains: Vec<SurroundingMountain> = Vec::new();
         while let Some(sd) = mountain_doc_list.try_next().await? {

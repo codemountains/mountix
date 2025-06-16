@@ -1,18 +1,14 @@
 [package]
 name = "mountix-adapter"
-version = "1.1.0"
+version = "1.2.0"
 edition = "2021"
 
 [dependencies]
 mountix-kernel = { path = "../mountix-kernel" }
-anyhow = "1.0.58"
-async-trait = "0.1.56"
-dotenv = "0.15.0"
-tokio = { version = "1.20.0", features = ["full"] }
-serde = { version = "1.0.140", features = ["derive"] }
-futures = "0.3.21"
-
-[dependencies.mongodb]
-version = "2.3.0"
-default-features = false
-features = ["tokio-runtime"]
+anyhow = "1.0.98"
+async-trait = "0.1.88"
+dotenvy = "0.15.7"
+tokio = { version = "1.45.1", features = ["full"] }
+serde = { version = "1.0.219", features = ["derive"] }
+futures = "0.3.31"
+mongodb = "3.2.3"

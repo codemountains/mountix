@@ -1,6 +1,6 @@
 use crate::model::mountain::{
-    JsonBoxMountainsResponse, JsonMountain, JsonMountainsResponse, MountainBoxSearchQueryParam, MountainError,
-    MountainSearchQueryParam,
+    JsonBoxMountainsResponse, JsonMountain, JsonMountainsResponse, MountainBoxSearchQueryParam,
+    MountainError, MountainSearchQueryParam,
 };
 use crate::model::JsonErrorResponse;
 use crate::module::{Modules, ModulesExt};

@@ -12,7 +12,7 @@ impl HealthCheckRepository {
 
     pub async fn check_mongo_db(&self) -> anyhow::Result<()> {
         let db = self.db.0.clone();
-        let _ = db.list_collections(None, None).await?;
+        let _ = db.list_collections().await?;
         Ok(())
     }
 }

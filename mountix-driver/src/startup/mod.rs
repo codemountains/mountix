@@ -5,10 +5,11 @@ use crate::routes::mountain::{find_mountains, find_mountains_by_box, get_mountai
 use crate::routes::surrounding_mountain::find_surroundings;
 use axum::http::Method;
 use axum::{routing::get, Extension, Router};
-use dotenv::dotenv;
+use dotenvy::dotenv;
 use std::env;
 use std::net::{IpAddr, SocketAddr};
 use std::sync::Arc;
+use tokio::net::TcpListener;
 use tower_http::cors::{Any, CorsLayer};
 
 pub async fn startup(modules: Arc<Modules>) {
@@ -22,8 +23,8 @@ pub async fn startup(modules: Arc<Modules>) {
 
     let mountain_router = Router::new()
         .route("/", get(find_mountains))
-        .route("/:id", get(get_mountain))
-        .route("/:id/surroundings", get(find_surroundings))
+        .route("/{id}", get(get_mountain))
+        .route("/{id}/surroundings", get(find_surroundings))
         .route("/geosearch", get(find_mountains_by_box));
 
     let info_router = Router::new().route("/", get(info));
@@ -38,8 +39,11 @@ pub async fn startup(modules: Arc<Modules>) {
     let addr = SocketAddr::from(init_addr());
     tracing::info!("Server listening on {}", addr);
 
-    axum::Server::bind(&addr)
-        .serve(app.into_make_service())
+    let listener = TcpListener::bind(addr)
+        .await
+        .unwrap_or_else(|e| panic!("Failed to bind to address {}: {:?}", addr, e));
+
+    axum::serve(listener, app)
         .await
         .unwrap_or_else(|_| panic!("Server cannot launch."));
 }
