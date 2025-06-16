@@ -44,7 +44,7 @@ pub async fn startup(modules: Arc<Modules>) {
                         headers = ?request.headers(),
                         method = ?request.method(),
                         uri = ?request.uri(),
-                        "Received HTTP request."
+                        "Received Health Check request."
                     );
                     tracing::span!(Level::DEBUG, "http-request")
                 } else {
@@ -52,7 +52,7 @@ pub async fn startup(modules: Arc<Modules>) {
                         headers = ?request.headers(),
                         method = ?request.method(),
                         uri = ?request.uri(),
-                        "Received Health Check request."
+                        "Received HTTP request."
                     );
                     tracing::span!(Level::INFO, "http-request")
                 }
