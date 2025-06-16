@@ -11,6 +11,8 @@ use std::net::{IpAddr, SocketAddr};
 use std::sync::Arc;
 use tokio::net::TcpListener;
 use tower_http::cors::{Any, CorsLayer};
+use tower_http::trace::TraceLayer;
+use tracing::Level;
 
 pub async fn startup(modules: Arc<Modules>) {
     let cors = CorsLayer::new()
@@ -34,7 +36,18 @@ pub async fn startup(modules: Arc<Modules>) {
         .nest("/api/v1/hc", hc_router)
         .nest("/api/v1/mountains", mountain_router)
         .layer(cors)
-        .layer(Extension(modules));
+        .layer(Extension(modules))
+        .layer(
+            TraceLayer::new_for_http().make_span_with(|request: &axum::http::Request<_>| {
+                tracing::info!(
+                    headers = ?request.headers(),
+                    method = ?request.method(),
+                    uri = ?request.uri(),
+                    "Received HTTP request."
+                );
+                tracing::span!(Level::INFO, "http-request")
+            }),
+        );
 
     let addr = SocketAddr::from(init_addr());
     tracing::info!("Server listening on {}", addr);
@@ -50,7 +63,10 @@ pub async fn startup(modules: Arc<Modules>) {
 
 pub fn init_app() {
     dotenv().ok();
-    tracing_subscriber::fmt::init();
+    tracing_subscriber::fmt()
+        .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
+        .json()
+        .init();
 }
 
 fn init_addr() -> (IpAddr, u16) {
