@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  mountix:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    working_dir: /workspace
+    volumes:
+      - .:/workspace:cached
+      - cargo-cache:/home/mountix/.cargo/registry
+      - target-cache:/workspace/target
+      - .zshrc:/root/.zshrc
+      - oh-my-zsh:/root/.oh-my-zsh
+      - zsh-history:/root/.history
+    ports:
+      - "3300:3300"
+    tty: true
+    stdin_open: true
+
+volumes:
+  cargo-cache:
+    name: mountix-cargo-cache
+  target-cache:
+    name: mountix-target-cache
+  oh-my-zsh:
+    name: mountix-oh-my-zsh
+  zsh-history:
+    name: mountix-zsh-history
