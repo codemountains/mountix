@@ -38,10 +38,10 @@ RUST_LOG=debug
 HOST=127.0.0.1
 PORT=8080
 
-# More infomation here https://www.mongodb.com/docs/manual/reference/connection-string/
+# More information here https://www.mongodb.com/docs/manual/reference/connection-string/
 # defaultauthdb is `mountix_db`
 DATABASE_URL={mongodb connection url}
-DATABESE_NAME=mountix_db
+DATABASE_NAME=mountix_db
 MOUNTAINS_URL=http://127.0.0.1:8080/api/v1/mountains
 
 # See https://github.com/codemountains/mountix-docs
@@ -55,6 +55,12 @@ Execute `cargo run` command.
 ```shell
 cargo run
 ```
+
+## Postman Public API Network
+
+Postman Public API Network で API を公開しています。
+
+[https://www.postman.com/codemountains-dev/mountix](https://www.postman.com/codemountains-dev/mountix)
 
 ## Architecture
 

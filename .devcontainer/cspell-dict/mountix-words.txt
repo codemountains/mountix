@@ -1,0 +1,7 @@
+clippy
+defaultauthdb
+INITDB
+lldb
+mongoimport
+mountix
+rustup

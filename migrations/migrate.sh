@@ -6,6 +6,9 @@ brew tap mongodb/brew
 brew install mongodb-database-tools
 
 mongoimport $DATABASE_URL \
---collection=mountains_sh_v2 \
+--collection=mountains \
 --db=mountix_db \
 --file="./data/mountix_db-mountains.json"
+
+brew remove mongodb-database-tools
+brew untap mongodb/brew
