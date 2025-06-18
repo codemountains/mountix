@@ -5,6 +5,7 @@
     ],
     "service": "mountix",
     "workspaceFolder": "/workspace",
+    "forwardPorts": [3300, 27017],
     "customizations": {
         "vscode": {
             "extensions": [
