@@ -1,7 +1,9 @@
+binstall
 clippy
 defaultauthdb
 INITDB
 lldb
 mongoimport
 mountix
+robbyrussell
 rustup
