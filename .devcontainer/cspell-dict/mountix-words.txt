@@ -1,9 +1,17 @@
+2dsphere
 binstall
 clippy
 defaultauthdb
+dotenv
+dotenvy
+geosearch
+geospatial
 INITDB
 lldb
+mockall
 mongoimport
+mongosh
 mountix
 robbyrussell
 rustup
+untap
