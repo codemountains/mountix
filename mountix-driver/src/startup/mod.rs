@@ -97,3 +97,78 @@ fn init_addr() -> (IpAddr, u16) {
     tracing::debug!("Init ip address.");
     (ip_addr, port)
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::sync::Mutex;
+
+    // Shared lock to ensure environment variable tests run sequentially
+    static ENV_LOCK: Mutex<()> = Mutex::new(());
+
+    #[test]
+    fn test_init_addr_with_valid_env_vars() {
+        let _lock = ENV_LOCK.lock().unwrap();
+
+        // Set test environment variables
+        std::env::set_var("HOST", "127.0.0.1");
+        std::env::set_var("PORT", "8080");
+
+        let (ip_addr, port) = init_addr();
+
+        assert_eq!(ip_addr.to_string(), "127.0.0.1");
+        assert_eq!(port, 8080);
+
+        // Clean up environment variables
+        std::env::remove_var("HOST");
+        std::env::remove_var("PORT");
+    }
+
+    #[test]
+    fn test_init_addr_with_different_host() {
+        let _lock = ENV_LOCK.lock().unwrap();
+
+        std::env::set_var("HOST", "0.0.0.0");
+        std::env::set_var("PORT", "3000");
+
+        let (ip_addr, port) = init_addr();
+
+        assert_eq!(ip_addr.to_string(), "0.0.0.0");
+        assert_eq!(port, 3000);
+
+        std::env::remove_var("HOST");
+        std::env::remove_var("PORT");
+    }
+
+    #[test]
+    fn test_socket_addr_creation() {
+        // Test SocketAddr creation from IP and port using manual construction
+        // This avoids relying on environment variables that might be in an inconsistent state
+        let ip_addr: IpAddr = "192.168.1.1".parse().unwrap();
+        let port: u16 = 9000;
+        let socket_addr = SocketAddr::from((ip_addr, port));
+
+        assert_eq!(socket_addr.ip().to_string(), "192.168.1.1");
+        assert_eq!(socket_addr.port(), 9000);
+    }
+
+    #[test]
+    fn test_env_var_parsing() {
+        let _lock = ENV_LOCK.lock().unwrap();
+
+        // Test environment variable parsing for different scenarios
+        std::env::set_var("HOST", "::1"); // IPv6 localhost
+        std::env::set_var("PORT", "8443");
+
+        let (ip_addr, port) = init_addr();
+
+        assert_eq!(ip_addr.to_string(), "::1");
+        assert_eq!(port, 8443);
+
+        std::env::remove_var("HOST");
+        std::env::remove_var("PORT");
+    }
+
+    // Note: Full startup tests would require actual server initialization
+    // These tests focus on individual components and configuration
+}

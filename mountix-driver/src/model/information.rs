@@ -50,3 +50,86 @@ impl JsonEndpoint {
         Self { resource, url }
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_json_endpoint_new() {
+        let resource = "mountains".to_string();
+        let url = "https://api.example.com/mountains".to_string();
+        let endpoint = JsonEndpoint::new(resource.clone(), url.clone());
+
+        assert_eq!(endpoint.resource, resource);
+        assert_eq!(endpoint.url, url);
+    }
+
+    #[test]
+    fn test_json_endpoint_structure() {
+        let endpoint = JsonEndpoint {
+            resource: "test".to_string(),
+            url: "https://test.com".to_string(),
+        };
+
+        assert_eq!(endpoint.resource, "test");
+        assert_eq!(endpoint.url, "https://test.com");
+    }
+
+    #[test]
+    fn test_json_information_response_with_env_vars() {
+        // Set test environment variables
+        std::env::set_var("MOUNTAINS_URL", "https://test.example.com/mountains");
+        std::env::set_var("DOCUMENTS_URL", "https://test.example.com/docs");
+
+        let response = JsonInformationResponse::default();
+
+        assert_eq!(
+            response.about,
+            "日本の主な山岳をJSON形式で提供するAPIです。"
+        );
+        assert_eq!(response.endpoints.len(), 1);
+        assert_eq!(response.endpoints[0].resource, "mountains");
+        assert_eq!(
+            response.endpoints[0].url,
+            "https://test.example.com/mountains"
+        );
+        assert_eq!(response.documents, "https://test.example.com/docs");
+
+        // Clean up environment variables
+        std::env::remove_var("MOUNTAINS_URL");
+        std::env::remove_var("DOCUMENTS_URL");
+    }
+
+    #[test]
+    fn test_json_endpoint_multiple_resources() {
+        let endpoints = vec![
+            JsonEndpoint::new(
+                "mountains".to_string(),
+                "https://api.com/mountains".to_string(),
+            ),
+            JsonEndpoint::new("health".to_string(), "https://api.com/health".to_string()),
+        ];
+
+        assert_eq!(endpoints.len(), 2);
+        assert_eq!(endpoints[0].resource, "mountains");
+        assert_eq!(endpoints[1].resource, "health");
+    }
+
+    #[test]
+    fn test_json_information_response_structure() {
+        // Test structure without environment dependencies
+        std::env::set_var("MOUNTAINS_URL", "https://example.com/mountains");
+        std::env::set_var("DOCUMENTS_URL", "https://example.com/docs");
+
+        let response = JsonInformationResponse::default();
+
+        // Test that all required fields are present
+        assert!(!response.about.is_empty());
+        assert!(!response.endpoints.is_empty());
+        assert!(!response.documents.is_empty());
+
+        std::env::remove_var("MOUNTAINS_URL");
+        std::env::remove_var("DOCUMENTS_URL");
+    }
+}

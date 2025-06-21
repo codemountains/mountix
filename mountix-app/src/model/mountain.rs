@@ -4,6 +4,7 @@ use mountix_kernel::model::mountain::{
     MountainPrefecture, MountainSearchCondition, MountainSortCondition, MountainTag,
 };
 
+#[derive(Debug)]
 pub struct SearchedMountain {
     pub id: i32,
     pub name: String,
@@ -30,6 +31,7 @@ impl From<Mountain> for SearchedMountain {
     }
 }
 
+#[derive(Debug)]
 pub struct SearchedMountainLocation {
     pub latitude: f64,
     pub longitude: f64,
@@ -46,6 +48,7 @@ impl From<MountainLocation> for SearchedMountainLocation {
     }
 }
 
+#[derive(Debug)]
 pub struct SearchedMountainResult {
     pub mountains: Vec<SearchedMountain>,
     pub total: u64,
@@ -115,7 +118,7 @@ impl TryFrom<MountainSearchQuery> for MountainSearchCondition {
             }
         }
 
-        if errors.len() > 0 {
+        if !errors.is_empty() {
             return Err(errors);
         }
 
@@ -130,6 +133,7 @@ impl TryFrom<MountainSearchQuery> for MountainSearchCondition {
     }
 }
 
+#[derive(Debug)]
 pub struct SearchedBoxMountainResult {
     pub mountains: Vec<SearchedMountain>,
     pub total: u64,
@@ -175,7 +179,7 @@ impl TryFrom<MountainBoxSearchQuery> for MountainBoxSearchCondition {
             }
         }
 
-        if errors.len() > 0 {
+        if !errors.is_empty() {
             return Err(errors);
         }
 

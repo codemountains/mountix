@@ -5,6 +5,7 @@ use mountix_kernel::model::surrounding_mountain::{
 use std::env;
 use std::ffi::OsString;
 
+#[derive(Debug)]
 pub struct SearchedSurroundingMountain {
     pub id: i32,
     pub name: String,
@@ -31,6 +32,7 @@ impl From<SurroundingMountain> for SearchedSurroundingMountain {
     }
 }
 
+#[derive(Debug)]
 pub struct SearchedSurroundingMountainLocation {
     pub latitude: f64,
     pub longitude: f64,
@@ -47,6 +49,7 @@ impl From<SurroundingMountainLocation> for SearchedSurroundingMountainLocation {
     }
 }
 
+#[derive(Debug)]
 pub struct SearchedSurroundingMountainResult {
     pub mountains: Vec<SearchedSurroundingMountain>,
     pub distance: u32,
