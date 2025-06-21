@@ -74,7 +74,7 @@ impl From<SearchedSurroundingMountainResult> for JsonSurroundingMountainResponse
 
 #[derive(Debug, Deserialize)]
 pub struct SurroundingMountainSearchQueryParam {
-    distance: Option<String>,
+    pub distance: Option<String>,
 }
 
 impl From<SurroundingMountainSearchQueryParam> for SurroundingMountainSearchQuery {

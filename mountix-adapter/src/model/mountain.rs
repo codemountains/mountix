@@ -1,7 +1,7 @@
 use mongodb::bson::{doc, Document};
 use mongodb::options::FindOptions;
 use mountix_kernel::model::mountain::{
-    Mountain, MountainBoxSearchCondition, MountainLocation, MountainSearchCondition,
+    Mountain, MountainBoxSearchCondition, MountainData, MountainLocation, MountainSearchCondition,
 };
 use mountix_kernel::model::Id;
 use serde::{Deserialize, Serialize};
@@ -31,22 +31,24 @@ impl TryFrom<MountainDocument> for Mountain {
     fn try_from(mountain_doc: MountainDocument) -> Result<Self, Self::Error> {
         let mountain_id: Id<Mountain> = mountain_doc.id.into();
 
+        // MongoDBの地理的データ形式: [longitude, latitude]
+        // Rustの座標形式: (latitude, longitude)
         let mountain_location = MountainLocation::new(
-            mountain_doc.location.coordinates[1],
-            mountain_doc.location.coordinates[0],
+            mountain_doc.location.coordinates[1], // latitude (緯度)
+            mountain_doc.location.coordinates[0], // longitude (経度)
             mountain_doc.gsi_url,
         );
 
-        Ok(Mountain::new(
-            mountain_id,
-            mountain_doc.name,
-            mountain_doc.name_kana,
-            mountain_doc.area,
-            mountain_doc.prefectures,
-            mountain_doc.elevation,
-            mountain_location,
-            mountain_doc.tags,
-        ))
+        let data = MountainData {
+            name: mountain_doc.name,
+            name_kana: mountain_doc.name_kana,
+            area: mountain_doc.area,
+            prefectures: mountain_doc.prefectures,
+            elevation: mountain_doc.elevation,
+            location: mountain_location,
+            tags: mountain_doc.tags,
+        };
+        Ok(Mountain::new(mountain_id, data))
     }
 }
 
@@ -76,7 +78,7 @@ impl TryFrom<MountainSearchCondition> for MountainFindCommand {
             and_doc.push(doc! {"tags": &tag_name});
         }
 
-        if and_doc.len() > 0 {
+        if !and_doc.is_empty() {
             filter.insert("$and", and_doc);
         }
 
@@ -104,6 +106,7 @@ impl TryFrom<MountainBoxSearchCondition> for MountainFindBoxCommand {
 
     fn try_from(sc: MountainBoxSearchCondition) -> Result<Self, Self::Error> {
         let mut filter = Document::new();
+        // MongoDBの地理的ボックス検索では [longitude, latitude] の順序が必要
         let mut and_doc = vec![
             doc! {"location": {"$geoWithin": {"$box": [[sc.box_coordinates.bottom_left.0,sc.box_coordinates.bottom_left.1], [sc.box_coordinates.upper_right.0,sc.box_coordinates.upper_right.1]]}}},
         ];

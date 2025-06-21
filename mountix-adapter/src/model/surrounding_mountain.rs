@@ -1,6 +1,7 @@
 use mongodb::bson::{doc, Document};
 use mountix_kernel::model::surrounding_mountain::{
-    SurroundingMountain, SurroundingMountainLocation, SurroundingMountainSearchCondition,
+    SurroundingMountain, SurroundingMountainData, SurroundingMountainLocation,
+    SurroundingMountainSearchCondition,
 };
 use mountix_kernel::model::Id;
 use serde::{Deserialize, Serialize};
@@ -30,22 +31,24 @@ impl TryFrom<SurroundingMountainDocument> for SurroundingMountain {
     fn try_from(mountain_doc: SurroundingMountainDocument) -> Result<Self, Self::Error> {
         let mountain_id: Id<SurroundingMountain> = mountain_doc.id.into();
 
+        // MongoDBの地理的データ形式: [longitude, latitude]
+        // Rustの座標形式: (latitude, longitude)
         let mountain_location = SurroundingMountainLocation::new(
-            mountain_doc.location.coordinates[1],
-            mountain_doc.location.coordinates[0],
+            mountain_doc.location.coordinates[1], // latitude (緯度)
+            mountain_doc.location.coordinates[0], // longitude (経度)
             mountain_doc.gsi_url,
         );
 
-        Ok(SurroundingMountain::new(
-            mountain_id,
-            mountain_doc.name,
-            mountain_doc.name_kana,
-            mountain_doc.area,
-            mountain_doc.prefectures,
-            mountain_doc.elevation,
-            mountain_location,
-            mountain_doc.tags,
-        ))
+        let data = SurroundingMountainData {
+            name: mountain_doc.name,
+            name_kana: mountain_doc.name_kana,
+            area: mountain_doc.area,
+            prefectures: mountain_doc.prefectures,
+            elevation: mountain_doc.elevation,
+            location: mountain_location,
+            tags: mountain_doc.tags,
+        };
+        Ok(SurroundingMountain::new(mountain_id, data))
     }
 }
 
@@ -57,9 +60,10 @@ impl TryFrom<SurroundingMountainSearchCondition> for SurroundingMountainFindComm
     type Error = anyhow::Error;
 
     fn try_from(sc: SurroundingMountainSearchCondition) -> Result<Self, Self::Error> {
+        // MongoDBの地理的クエリでは [longitude, latitude] の順序が必要
         let coordinates = (
-            sc.mountain.location.longitude,
-            sc.mountain.location.latitude,
+            sc.mountain.location.longitude, // longitude (経度)
+            sc.mountain.location.latitude,  // latitude (緯度)
         );
         let filter = doc! {"$and": [{"location":{"$nearSphere": {"$geometry": { "type": "Point",  "coordinates": [coordinates.0, coordinates.1]},"$minDistance": 0,"$maxDistance": sc.distance.0}}}, {"_id": {"$ne": &sc.mountain.id.value}}]};
 

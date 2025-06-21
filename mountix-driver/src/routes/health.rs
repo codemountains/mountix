@@ -26,3 +26,19 @@ pub async fn hc_mongodb(
             StatusCode::SERVICE_UNAVAILABLE
         })
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[tokio::test]
+    async fn test_hc_endpoint() {
+        let response = hc().await;
+
+        // Test that health check returns NO_CONTENT status
+        assert_eq!(response.into_response().status(), StatusCode::NO_CONTENT);
+    }
+
+    // Note: MongoDB health check tests would require actual database connection
+    // The hc_mongodb function tests are omitted as they need real infrastructure
+}

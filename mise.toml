@@ -1,0 +1,4 @@
+[tools]
+node = "22.16.0"
+gh = "latest"
+"npm:@anthropic-ai/claude-code" = "latest"

@@ -55,3 +55,6 @@ Temporary Items
 
 # mountix
 .env
+
+# Claude
+.claude/*.local.json

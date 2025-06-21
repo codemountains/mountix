@@ -22,26 +22,27 @@ pub struct MountainLocation {
     pub gsi_url: String,
 }
 
+pub struct MountainData {
+    pub name: String,
+    pub name_kana: String,
+    pub area: String,
+    pub prefectures: Vec<String>,
+    pub elevation: u32,
+    pub location: MountainLocation,
+    pub tags: Vec<String>,
+}
+
 impl Mountain {
-    pub fn new(
-        id: Id<Mountain>,
-        name: String,
-        name_kana: String,
-        area: String,
-        prefectures: Vec<String>,
-        elevation: u32,
-        location: MountainLocation,
-        tags: Vec<String>,
-    ) -> Self {
+    pub fn new(id: Id<Mountain>, data: MountainData) -> Self {
         Self {
             id,
-            name,
-            name_kana,
-            area,
-            prefectures,
-            elevation,
-            location,
-            tags,
+            name: data.name,
+            name_kana: data.name_kana,
+            area: data.area,
+            prefectures: data.prefectures,
+            elevation: data.elevation,
+            location: data.location,
+            tags: data.tags,
         }
     }
 }
@@ -266,6 +267,7 @@ pub struct MountainBoxSearchCondition {
     pub sort: MountainSortCondition,
 }
 
+#[derive(Debug)]
 pub struct MountainBoxCoordinates {
     pub bottom_left: (f64, f64),
     pub upper_right: (f64, f64),
@@ -288,7 +290,7 @@ impl TryFrom<String> for MountainBoxCoordinates {
             .ok_or(Self::Error::msg("Invalid bottom left longitude."))?
             .as_str()
             .parse::<f64>()?;
-        if bottom_left_lng > 180.0 || bottom_left_lng < -180.0 {
+        if !(-180.0..=180.0).contains(&bottom_left_lng) {
             return Err(Self::Error::msg("Invalid bottom left longitude."));
         }
 
@@ -297,7 +299,7 @@ impl TryFrom<String> for MountainBoxCoordinates {
             .ok_or(Self::Error::msg("Invalid bottom left latitude."))?
             .as_str()
             .parse::<f64>()?;
-        if bottom_left_lat > 90.0 || bottom_left_lat < -90.0 {
+        if !(-90.0..=90.0).contains(&bottom_left_lat) {
             return Err(Self::Error::msg("Invalid bottom left latitude."));
         }
 
@@ -306,7 +308,7 @@ impl TryFrom<String> for MountainBoxCoordinates {
             .ok_or(Self::Error::msg("Invalid upper right longitude."))?
             .as_str()
             .parse::<f64>()?;
-        if upper_right_lng > 180.0 || upper_right_lng < -180.0 {
+        if !(-180.0..=180.0).contains(&upper_right_lng) {
             return Err(Self::Error::msg("Invalid upper right longitude."));
         }
 
@@ -315,7 +317,7 @@ impl TryFrom<String> for MountainBoxCoordinates {
             .ok_or(Self::Error::msg("Invalid upper right latitude."))?
             .as_str()
             .parse::<f64>()?;
-        if upper_right_lat > 90.0 || upper_right_lat < -90.0 {
+        if !(-90.0..=90.0).contains(&upper_right_lat) {
             return Err(Self::Error::msg("Invalid upper right latitude."));
         }
 
@@ -364,5 +366,215 @@ impl MountainFindException {
             error_code,
             messages,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_mountain_prefecture_try_from_valid_id() {
+        let result = MountainPrefecture::try_from("1".to_string());
+        assert!(result.is_ok());
+        let prefecture = result.unwrap();
+        assert_eq!(prefecture.id, 1);
+        assert_eq!(prefecture.name, "北海道");
+    }
+
+    #[test]
+    fn test_mountain_prefecture_try_from_valid_tokyo() {
+        let result = MountainPrefecture::try_from("13".to_string());
+        assert!(result.is_ok());
+        let prefecture = result.unwrap();
+        assert_eq!(prefecture.id, 13);
+        assert_eq!(prefecture.name, "東京都");
+    }
+
+    #[test]
+    fn test_mountain_prefecture_try_from_invalid_id() {
+        let result = MountainPrefecture::try_from("48".to_string());
+        assert!(result.is_err());
+        assert_eq!(result.unwrap_err().to_string(), "Invalid prefecture value.");
+    }
+
+    #[test]
+    fn test_mountain_prefecture_try_from_invalid_string() {
+        let result = MountainPrefecture::try_from("invalid".to_string());
+        assert!(result.is_err());
+        assert_eq!(result.unwrap_err().to_string(), "Invalid prefecture value.");
+    }
+
+    #[test]
+    fn test_mountain_prefecture_try_from_zero() {
+        let result = MountainPrefecture::try_from("0".to_string());
+        assert!(result.is_err());
+        assert_eq!(result.unwrap_err().to_string(), "Invalid prefecture value.");
+    }
+
+    #[test]
+    fn test_mountain_tag_try_from_valid_hyakumeizan() {
+        let result = MountainTag::try_from("1".to_string());
+        assert!(result.is_ok());
+        let tag = result.unwrap();
+        assert_eq!(tag.id, 1);
+        assert_eq!(tag.name, "百名山");
+    }
+
+    #[test]
+    fn test_mountain_tag_try_from_valid_nihyakumeizan() {
+        let result = MountainTag::try_from("2".to_string());
+        assert!(result.is_ok());
+        let tag = result.unwrap();
+        assert_eq!(tag.id, 2);
+        assert_eq!(tag.name, "二百名山");
+    }
+
+    #[test]
+    fn test_mountain_tag_try_from_invalid_id() {
+        let result = MountainTag::try_from("3".to_string());
+        assert!(result.is_err());
+        assert_eq!(result.unwrap_err().to_string(), "Invalid tag value.");
+    }
+
+    #[test]
+    fn test_mountain_tag_try_from_invalid_string() {
+        let result = MountainTag::try_from("invalid".to_string());
+        assert!(result.is_err());
+        assert_eq!(result.unwrap_err().to_string(), "Invalid tag value.");
+    }
+
+    #[test]
+    fn test_mountain_tag_try_from_zero() {
+        let result = MountainTag::try_from("0".to_string());
+        assert!(result.is_err());
+        assert_eq!(result.unwrap_err().to_string(), "Invalid tag value.");
+    }
+
+    #[test]
+    fn test_mountain_sort_condition_try_from_id_asc() {
+        let result = MountainSortCondition::try_from("id.asc".to_string());
+        assert!(result.is_ok());
+        let sort = result.unwrap();
+        assert_eq!(sort.key.to_key(), "_id");
+        assert_eq!(sort.order.to_value(), 1);
+    }
+
+    #[test]
+    fn test_mountain_sort_condition_try_from_id_desc() {
+        let result = MountainSortCondition::try_from("id.desc".to_string());
+        assert!(result.is_ok());
+        let sort = result.unwrap();
+        assert_eq!(sort.key.to_key(), "_id");
+        assert_eq!(sort.order.to_value(), -1);
+    }
+
+    #[test]
+    fn test_mountain_sort_condition_try_from_elevation_asc() {
+        let result = MountainSortCondition::try_from("elevation.asc".to_string());
+        assert!(result.is_ok());
+        let sort = result.unwrap();
+        assert_eq!(sort.key.to_key(), "elevation");
+        assert_eq!(sort.order.to_value(), 1);
+    }
+
+    #[test]
+    fn test_mountain_sort_condition_try_from_name_desc() {
+        let result = MountainSortCondition::try_from("name.desc".to_string());
+        assert!(result.is_ok());
+        let sort = result.unwrap();
+        assert_eq!(sort.key.to_key(), "name_kana");
+        assert_eq!(sort.order.to_value(), -1);
+    }
+
+    #[test]
+    fn test_mountain_sort_condition_try_from_invalid() {
+        let result = MountainSortCondition::try_from("invalid".to_string());
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_mountain_sort_condition_default() {
+        let sort = MountainSortCondition::default();
+        assert_eq!(sort.key.to_key(), "_id");
+        assert_eq!(sort.order.to_value(), 1);
+    }
+
+    #[test]
+    fn test_mountain_box_coordinates_try_from_valid() {
+        let box_param = "(139.0,35.0),(140.0,36.0)".to_string();
+        let result = MountainBoxCoordinates::try_from(box_param);
+        assert!(result.is_ok());
+        let coords = result.unwrap();
+        assert_eq!(coords.bottom_left, (139.0, 35.0));
+        assert_eq!(coords.upper_right, (140.0, 36.0));
+    }
+
+    #[test]
+    fn test_mountain_box_coordinates_try_from_negative_coords() {
+        let box_param = "(-139.5,-35.5),(-138.5,-34.5)".to_string();
+        let result = MountainBoxCoordinates::try_from(box_param);
+        assert!(result.is_ok());
+        let coords = result.unwrap();
+        assert_eq!(coords.bottom_left, (-139.5, -35.5));
+        assert_eq!(coords.upper_right, (-138.5, -34.5));
+    }
+
+    #[test]
+    fn test_mountain_box_coordinates_try_from_boundary_longitude() {
+        let box_param = "(-180.0,35.0),(180.0,36.0)".to_string();
+        let result = MountainBoxCoordinates::try_from(box_param);
+        assert!(result.is_ok());
+        let coords = result.unwrap();
+        assert_eq!(coords.bottom_left, (-180.0, 35.0));
+        assert_eq!(coords.upper_right, (180.0, 36.0));
+    }
+
+    #[test]
+    fn test_mountain_box_coordinates_try_from_boundary_latitude() {
+        let box_param = "(139.0,-90.0),(140.0,90.0)".to_string();
+        let result = MountainBoxCoordinates::try_from(box_param);
+        assert!(result.is_ok());
+        let coords = result.unwrap();
+        assert_eq!(coords.bottom_left, (139.0, -90.0));
+        assert_eq!(coords.upper_right, (140.0, 90.0));
+    }
+
+    #[test]
+    fn test_mountain_box_coordinates_try_from_invalid_longitude() {
+        let box_param = "(181.0,35.0),(140.0,36.0)".to_string();
+        let result = MountainBoxCoordinates::try_from(box_param);
+        assert!(result.is_err());
+        assert_eq!(
+            result.unwrap_err().to_string(),
+            "Invalid bottom left longitude."
+        );
+    }
+
+    #[test]
+    fn test_mountain_box_coordinates_try_from_invalid_latitude() {
+        let box_param = "(139.0,91.0),(140.0,36.0)".to_string();
+        let result = MountainBoxCoordinates::try_from(box_param);
+        assert!(result.is_err());
+        assert_eq!(
+            result.unwrap_err().to_string(),
+            "Invalid bottom left latitude."
+        );
+    }
+
+    #[test]
+    fn test_mountain_box_coordinates_try_from_invalid_format() {
+        let box_param = "invalid_format".to_string();
+        let result = MountainBoxCoordinates::try_from(box_param);
+        assert!(result.is_err());
+        assert_eq!(result.unwrap_err().to_string(), "Invalid box parameter.");
+    }
+
+    #[test]
+    fn test_mountain_box_coordinates_try_from_missing_coordinates() {
+        let box_param = "(139.0,35.0)".to_string();
+        let result = MountainBoxCoordinates::try_from(box_param);
+        assert!(result.is_err());
+        assert_eq!(result.unwrap_err().to_string(), "Invalid box parameter.");
     }
 }
