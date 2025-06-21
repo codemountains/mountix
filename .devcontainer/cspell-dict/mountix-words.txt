@@ -4,6 +4,7 @@ clippy
 defaultauthdb
 dotenv
 dotenvy
+dtolnay
 geosearch
 geospatial
 INITDB
