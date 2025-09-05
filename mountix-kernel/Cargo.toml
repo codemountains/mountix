@@ -1,13 +1,13 @@
 [package]
 name = "mountix-kernel"
-version = "1.2.0"
-edition = "2021"
+version.workspace = true
+edition.workspace = true
 
 [dependencies]
-anyhow = "1.0.98"
-async-trait = "0.1.88"
-serde = { version = "1.0.219", features = ["derive"] }
-regex = "1.11.1"
+anyhow = { workspace = true }
+async-trait = { workspace = true }
+serde = { workspace = true }
+regex = { workspace = true }
 
 [dev-dependencies]
-tokio-test = "0.4.4"
+tokio-test = { workspace = true }

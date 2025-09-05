@@ -1,25 +1,25 @@
 [package]
 name = "mountix-driver"
-version = "1.2.0"
-edition = "2021"
+version.workspace = true
+edition.workspace = true
 
 [dependencies]
 mountix-kernel = { path = "../mountix-kernel" }
 mountix-app = { path = "../mountix-app" }
 mountix-adapter = { path = "../mountix-adapter" }
-axum = "0.8.4"
-anyhow = "1.0.98"
-tokio = { version = "1.45.1", features = ["full"] }
-serde = { version = "1.0.219", features = ["derive"] }
-tracing = "0.1.41"
-tracing-subscriber = { version = "0.3.19", features = ["env-filter", "json"] }
-dotenvy = "0.15.7"
-tower = "0.5.2"
-tower-http = { version = "0.6.6", features = ["cors", "trace"] }
+axum = { workspace = true }
+anyhow = { workspace = true }
+tokio = { workspace = true }
+serde = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+dotenvy = { workspace = true }
+tower = { workspace = true }
+tower-http = { workspace = true }
 
 [dev-dependencies]
-tokio-test = "0.4.4"
-mockall = "0.13.0"
-tower = "0.5.2"
-hyper = "1.6.0"
-serde_json = "1.0.140"
+tokio-test = { workspace = true }
+mockall = { workspace = true }
+tower = { workspace = true }
+hyper = { workspace = true }
+serde_json = { workspace = true }
