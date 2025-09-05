@@ -1,16 +1,16 @@
 [package]
 name = "mountix-app"
-version = "1.2.0"
-edition = "2021"
+version.workspace = true
+edition.workspace = true
 
 [dependencies]
 mountix-kernel = { path = "../mountix-kernel" }
 mountix-adapter = { path = "../mountix-adapter" }
-anyhow = "1.0.98"
-tokio = { version = "1.45.1", features = ["full"] }
-num = "0.4.3"
-async-trait = "0.1.88"
+anyhow = { workspace = true }
+tokio = { workspace = true }
+num = { workspace = true }
+async-trait = { workspace = true }
 
 [dev-dependencies]
-tokio-test = "0.4.4"
-mockall = "0.13.0"
+tokio-test = { workspace = true }
+mockall = { workspace = true }

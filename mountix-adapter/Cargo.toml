@@ -1,18 +1,18 @@
 [package]
 name = "mountix-adapter"
-version = "1.2.0"
-edition = "2021"
+version.workspace = true
+edition.workspace = true
 
 [dependencies]
 mountix-kernel = { path = "../mountix-kernel" }
-anyhow = "1.0.98"
-async-trait = "0.1.88"
-dotenvy = "0.15.7"
-tokio = { version = "1.45.1", features = ["full"] }
-serde = { version = "1.0.219", features = ["derive"] }
-futures = "0.3.31"
-mongodb = "3.2.3"
+anyhow = { workspace = true }
+async-trait = { workspace = true }
+dotenvy = { workspace = true }
+tokio = { workspace = true }
+serde = { workspace = true }
+futures = { workspace = true }
+mongodb = { workspace = true }
 
 [dev-dependencies]
-tokio-test = "0.4.4"
-mockall = "0.13.0"
+tokio-test = { workspace = true }
+mockall = { workspace = true }
