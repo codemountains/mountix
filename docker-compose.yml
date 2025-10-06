@@ -24,7 +24,7 @@ services:
       - "27017:27017"
     volumes:
       - mongo-data:/data/db
-      - ./migrations/data/mountix_db-mountains.json:/docker-entrypoint-initdb.d/mountix_db-mountains.json
+      - ./migrations/data/mountix_db-mountains.jsonl:/docker-entrypoint-initdb.d/mountix_db-mountains.jsonl
       - ./migrations/devcontainer/migrate-in-docker.sh:/docker-entrypoint-initdb.d/migrate-in-docker.sh
     environment:
       - MONGO_INITDB_ROOT_USERNAME=mountix_admin

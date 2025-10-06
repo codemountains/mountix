@@ -8,7 +8,7 @@ mongoimport \
   --authenticationDatabase=admin \
   --db=mountix_db \
   --collection=mountains \
-  --file="/docker-entrypoint-initdb.d/mountix_db-mountains.json"
+  --file="/docker-entrypoint-initdb.d/mountix_db-mountains.jsonl"
 
 echo "Creating geospatial index on mountains collection..."
 

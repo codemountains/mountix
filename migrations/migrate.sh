@@ -10,7 +10,7 @@ echo "Migrating data into MongoDB..."
 mongoimport $DATABASE_URL \
   --collection=mountains \
   --db=mountix_db \
-  --file="./data/mountix_db-mountains.json"
+  --file="./data/mountix_db-mountains.jsonl"
 
 echo "Creating geospatial index on mountains collection..."
 
