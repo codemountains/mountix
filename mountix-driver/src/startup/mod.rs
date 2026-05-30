@@ -1,3 +1,4 @@
+use crate::mcp::mcp_service;
 use crate::module::Modules;
 use crate::routes::health::{hc, hc_mongodb};
 use crate::routes::information::info;
@@ -16,7 +17,13 @@ use tracing::Level;
 
 pub async fn startup(modules: Arc<Modules>) {
     let cors = CorsLayer::new()
-        .allow_methods([Method::GET, Method::OPTIONS, Method::HEAD])
+        .allow_methods([
+            Method::GET,
+            Method::POST,
+            Method::DELETE,
+            Method::OPTIONS,
+            Method::HEAD,
+        ])
         .allow_origin(Any);
 
     let hc_router = Router::new()
@@ -31,10 +38,13 @@ pub async fn startup(modules: Arc<Modules>) {
 
     let info_router = Router::new().route("/", get(info));
 
+    let mcp_service = mcp_service(modules.clone());
+
     let app = Router::new()
         .nest("/api/v1/", info_router)
         .nest("/api/v1/hc", hc_router)
         .nest("/api/v1/mountains", mountain_router)
+        .nest_service("/api/v1/mcp", mcp_service)
         .layer(cors)
         .layer(Extension(modules))
         .layer(
