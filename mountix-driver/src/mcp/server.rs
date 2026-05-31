@@ -190,7 +190,6 @@ impl MountixMcpServer {
 
 #[tool_handler(
     name = "mountix",
-    version = "1.2.0",
     instructions = "Mountix 日本の山岳データ API。百名山などの山岳情報を検索・取得できます。"
 )]
 impl ServerHandler for MountixMcpServer {}
