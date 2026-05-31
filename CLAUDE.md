@@ -24,6 +24,10 @@ Mountixは、クリーンアーキテクチャパターンを使用してRustで
 - `DATABASE_URL`にMongoDB接続文字列
 - `DATABASE_NAME=mountix_db`
 - サーバーのホスト/ポート設定
+- MCPサーバー設定（任意）: 
+  - `MCP_STATEFUL_MODE`（既定: `false`）
+  - `MCP_JSON_RESPONSE`（既定: `true`）
+  - `MCP_ALLOWED_HOSTS`（カンマ区切り。未設定時は `HOST` の値を含む既定値が使われる）
 
 ### データベースセットアップ
 
@@ -48,7 +52,8 @@ cd ../
    - Axum Webフレームワークのセットアップとルーティング
    - HTTPハンドラーとJSONシリアライゼーション
    - エントリーポイント: `startup/mod.rs`にサーバー設定
-   - ルート: `/api/v1/mountains`, `/api/v1/hc` (ヘルスチェック)
+   - ルート: `/api/v1/mountains`, `/api/v1/hc` (ヘルスチェック), `/mcp` (MCPサーバー)
+   - `rmcp` の `StreamableHttpService` を `nest_service` で `/mcp` にマウントし、MCPサーバーを公開（実装は `mcp/` 配下）
 
 2. **mountix-app** (Use Case/Application)
    - ビジネスロジックとアプリケーションワークフロー
@@ -78,6 +83,8 @@ cd ../
 - **ログ**: tracingによるJSON出力
 - **環境**: dotenvy（.envファイル読み込み）
 - **CORS**: API アクセス用に設定済み
+- **MCP**: `rmcp` クレート（Streamable HTTP transport）によるMCPサーバー
+- **JSON Schema**: `schemars`（MCPツールのパラメータスキーマ生成）
 
 ## APIエンドポイント
 
@@ -87,6 +94,20 @@ cd ../
 - `GET /api/v1/mountains/geosearch` - 地理的検索
 - `GET /api/v1/hc` - ヘルスチェック
 - `GET /api/v1/hc/mongo` - MongoDBヘルスチェック
+- `POST /mcp` - MCP（Model Context Protocol）Streamable HTTP エンドポイント
+
+## MCPサーバー
+
+`mountix-driver` 配下に Model Context Protocol サーバーを実装し、Cursor などの MCP 対応クライアントから山岳データを操作できるようにしています。
+
+### 提供ツール
+
+すべて `mountix-app` のユースケース（`mountain_use_case` / `surrounding_mountain_use_case`）を呼び出し、REST API と同じ JSON モデル（`JsonMountain` / `JsonMountainsResponse` / `JsonBoxMountainsResponse` / `JsonSurroundingMountainResponse`）を文字列として返します。
+
+- `get_mountain` - 山岳IDで山岳情報を1件取得
+- `find_mountains` - 名称・都道府県・タグなどで山岳検索
+- `find_mountains_by_box` - 緯度経度の矩形範囲で山岳検索
+- `find_surroundings` - 指定した山岳の周辺山岳を検索
 
 ## 開発ノート
 
