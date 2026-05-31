@@ -44,7 +44,7 @@ pub async fn startup(modules: Arc<Modules>) {
         .nest("/api/v1/", info_router)
         .nest("/api/v1/hc", hc_router)
         .nest("/api/v1/mountains", mountain_router)
-        .nest_service("/api/v1/mcp", mcp_service)
+        .nest_service("/mcp", mcp_service)
         .layer(cors)
         .layer(Extension(modules))
         .layer(
